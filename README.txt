@@ -1,0 +1,1 @@
+API to manage students enrolling for classes with specific teachers and for specific skills

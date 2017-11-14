@@ -1,0 +1,8 @@
+spring:
+    application:
+        name: teaching class manager
+    devtools:
+        restart:
+            enabled: true
+server:
+    port: 9080
