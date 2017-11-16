@@ -13,15 +13,24 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+
 @Table(name="Teachers")
 @Entity
+@Data
+@NoArgsConstructor
 public class Teacher {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Setter(value=AccessLevel.NONE)
 	private Long id;
 	
-	private String firstName;
+	private @NonNull String firstName;
 	private String lastName;
 	private String phoneNumber;
 	
@@ -36,49 +45,4 @@ public class Teacher {
 	
 	@OneToMany(mappedBy="teacher")
 	private List<Enrolment> enrolments;
-	
-	
-	public Long getId() {
-		return id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public List<Skill> getSkills() {
-		return skills;
-	}
-
-	public void setSkills(List<Skill> skills) {
-		this.skills = skills;
-	}
-
-	public List<Enrolment> getEnrolments() {
-		return enrolments;
-	}
-
-	public void setEnrolments(List<Enrolment> enrolments) {
-		this.enrolments = enrolments;
-	}
 }

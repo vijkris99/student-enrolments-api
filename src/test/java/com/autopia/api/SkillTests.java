@@ -9,9 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.autopia.data.entities.Student;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.SneakyThrows;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,33 +18,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class StudentTests {
+public class SkillTests {
 	
 	@Autowired
 	private MockMvc mockMvc;
 	
-	@Autowired
-	private ObjectMapper objectMapper;
-	
 	@SneakyThrows
 	@Test
-	public void getStudentsShouldSucceed() {
-		mockMvc.perform(get("/students")).andExpect(status().isOk());
+	public void getSkillssShouldSucceed() {
+		mockMvc.perform(get("/skills")).andExpect(status().isOk());
 	}
 	
 	@SneakyThrows
 	@Test
-	public void createStudentShouldSucceed() {
-		Student student = new Student();
-		student.setFirstName("Pranav");
+	public void createSkillShouldSucceed() {
+		String skillJson = "{\"skillName\":\"Keyboard\"}";
 		
 		mockMvc
-			.perform(post("/students")
+			.perform(post("/skills")
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
-					.content(objectMapper.writeValueAsString(student)))
+					.content(skillJson))
 			.andDo(print())
-			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.firstName").value(student.getFirstName()));
+			.andExpect(status().isCreated());
 	}
 }
