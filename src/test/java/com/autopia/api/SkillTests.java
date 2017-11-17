@@ -14,25 +14,36 @@ import lombok.SneakyThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SkillTests {
+public class SkillTests extends BaseTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
 	
 	@SneakyThrows
 	@Test
-	public void getSkillssShouldSucceed() {
-		mockMvc.perform(get("/skills")).andExpect(status().isOk());
+	public void getSkillsShouldSucceed() {
+		mockMvc.perform(get("/skills"))
+				.andExpect(status().isOk());
+	}
+	
+	@SneakyThrows
+	@Test
+	public void getSkillShouldReturnCorrectData() {
+		mockMvc.perform(get("/skills/{id}", 1))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.skillName").value("Keyboard"));
 	}
 	
 	@SneakyThrows
 	@Test
 	public void createSkillShouldSucceed() {
-		String skillJson = "{\"skillName\":\"Keyboard\"}";
+		String skillJson = "{\"skillName\":\"Vocals\"}";
 		
 		mockMvc
 			.perform(post("/skills")
@@ -40,6 +51,7 @@ public class SkillTests {
 					.accept(MediaType.APPLICATION_JSON_UTF8)
 					.content(skillJson))
 			.andDo(print())
-			.andExpect(status().isCreated());
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.skillName", is("Vocals")));
 	}
 }

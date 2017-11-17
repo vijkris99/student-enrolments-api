@@ -1,5 +1,5 @@
 package com.autopia.api;
 
-public class SessionTests {
+public class SessionTests extends BaseTest {
 
 }
