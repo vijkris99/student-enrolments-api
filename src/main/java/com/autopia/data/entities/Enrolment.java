@@ -1,22 +1,20 @@
 package com.autopia.data.entities;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Table(
@@ -33,28 +31,24 @@ public class Enrolment {
 	@Setter(value=AccessLevel.NONE)
 	private Long id;
 	
-	@NonNull
 	@ManyToOne
-	@JoinColumn(name="teacher_id")
+	@JoinColumn(name="teacher_id", nullable=false)
 	private Teacher teacher;
 	
-	@NonNull
 	@ManyToOne
-	@JoinColumn(name="student_id")
+	@JoinColumn(name="student_id", nullable=false)
 	private Student student;
 	
-	@NonNull
 	@ManyToOne
-	@JoinColumn(name="skill_id")
+	@JoinColumn(name="skill_id", nullable=false)
 	private Skill skill;
 	
-	@OneToMany(mappedBy="enrolment")
-	private List<Session> sessions;
+	@Column(nullable=false)
+	private Integer sessionFee;
 	
-	private @NonNull Integer sessionFee;
-	private Integer balanceDue;
-	private Boolean isActive;
+	private Integer balanceDue = 0;
+	private Boolean isActive = true;
 	
-	private @NonNull LocalDate startDate;
+	private LocalDate startDate;
 	private LocalDate endDate;
 }

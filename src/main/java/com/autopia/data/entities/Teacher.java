@@ -2,6 +2,7 @@ package com.autopia.data.entities;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,7 +16,6 @@ import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Table(name="Teachers")
@@ -29,8 +29,12 @@ public class Teacher {
 	@Setter(value=AccessLevel.NONE)
 	private Long id;
 	
-	private @NonNull String firstName;
+	@Column(nullable=false)
+	private String firstName;
+	
+	@Column(nullable=false)
 	private String lastName;
+	
 	private String phoneNumber;
 	
 	@ManyToMany

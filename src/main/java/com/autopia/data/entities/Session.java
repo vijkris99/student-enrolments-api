@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,6 @@ import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Table(
@@ -34,16 +34,21 @@ public class Session {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="enrolment_id")
+	@JoinColumn(name="enrolment_id", nullable=false)
 	private Enrolment enrolment;
 	
-	private @NonNull LocalDate date;
-	private @NonNull LocalTime time;
-	private @NonNull Duration duration;
+	@Column(nullable=false)
+	private LocalDate date;
 	
-	private Boolean sessionConducted;
-	private @NonNull Integer feePaid;
+	@Column(nullable=false)
+	private LocalTime time;
 	
-	private String cancelledBy;
-	private String cancelledReason;
+	@Column(nullable=false)
+	private Duration duration;
+	
+	private Boolean sessionConducted = false;
+	private Integer feePaid = 0;
+	
+	private String cancelledBy = "N/A";
+	private String cancelledReason = "N/A";
 }
