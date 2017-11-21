@@ -12,6 +12,7 @@ import com.autopia.data.entities.Skill;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class SkillTests extends BaseTest {
 	
 	@SneakyThrows
@@ -58,21 +60,26 @@ public class SkillTests extends BaseTest {
 		
 		// When I create a new entry for the skill
 		// Then it should succeed
-		MvcResult result = mockMvc
-							.perform(post("/skills")
-									.contentType(MediaType.APPLICATION_JSON_UTF8)
-									.accept(MediaType.APPLICATION_JSON_UTF8)
-									.content(skillJson))
-							.andDo(print())
-							.andExpect(status().isCreated())
-							.andExpect(jsonPath("$.skillName", is("Vocals")))
-							.andReturn();
-		
-		// Clean up
-		String createdSkillLocation = result.getResponse().getHeader("Location");
-		long createdSkillId = Long.parseLong(
-								createdSkillLocation.replace("http://localhost/skills/", ""));
-		skillRepository.delete(createdSkillId);
+		MvcResult result = null;
+		try {
+			result = mockMvc
+						.perform(post("/skills")
+								.contentType(MediaType.APPLICATION_JSON_UTF8)
+								.accept(MediaType.APPLICATION_JSON_UTF8)
+								.content(skillJson))
+						.andDo(print())
+						.andExpect(status().isCreated())
+						.andExpect(jsonPath("$.skillName", is("Vocals")))
+						.andReturn();
+		} catch(Exception ex) {
+			log.error("Error creating a new skill", ex);
+		} finally {
+			// Clean up
+			String createdSkillLocation = result.getResponse().getHeader("Location");
+			long createdSkillId = Long.parseLong(
+									createdSkillLocation.replace("http://localhost/skills/", ""));
+			skillRepository.delete(createdSkillId);
+		}
 	}
 	
 	@SneakyThrows
@@ -88,7 +95,8 @@ public class SkillTests extends BaseTest {
 		ObjectNode skillJson = objectMapper.createObjectNode();
 		skillJson.put("skillName", "Violin");
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(put("/skills/{id}", savedSkill.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -96,9 +104,12 @@ public class SkillTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.skillName").value("Violin"));
-		
-		// Clean up
-		skillRepository.delete(savedSkill.getId());
+		} catch(Exception ex) {
+			log.error("Error replacing an existing skill", ex);
+		} finally {
+			// Clean up
+			skillRepository.delete(savedSkill.getId());
+		}
 	}
 	
 	@SneakyThrows
@@ -114,7 +125,8 @@ public class SkillTests extends BaseTest {
 		ObjectNode skillJson = objectMapper.createObjectNode();
 		skillJson.put("skillName", "Violin");
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(patch("/skills/{id}", savedSkill.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -122,9 +134,12 @@ public class SkillTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.skillName").value("Violin"));
-		
-		// Clean up
-		skillRepository.delete(savedSkill.getId());
+		} catch(Exception ex) {
+			log.error("Error updating an existing skill", ex);
+		} finally {
+			// Clean up
+			skillRepository.delete(savedSkill.getId());
+		}
 	}
 	
 	@SneakyThrows

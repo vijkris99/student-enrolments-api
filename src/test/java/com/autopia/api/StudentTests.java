@@ -13,6 +13,7 @@ import com.autopia.data.entities.Student;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class StudentTests extends BaseTest {
 	
 	@SneakyThrows
@@ -53,7 +55,6 @@ public class StudentTests extends BaseTest {
 		Assert.assertEquals(200, mvcResult.getResponse().getStatus());
 	}
 	
-	@SneakyThrows
 	@Test
 	public void createStudentShouldSucceed() {
 		// Given a new student
@@ -61,24 +62,28 @@ public class StudentTests extends BaseTest {
 		
 		// When I create a new entry for the student
 		// Then it should succeed
-		MvcResult result = mockMvc
-							.perform(post("/students")
-									.contentType(MediaType.APPLICATION_JSON_UTF8)
-									.accept(MediaType.APPLICATION_JSON_UTF8)
-									.content(studentJson))
-							.andDo(print())
-							.andExpect(status().isCreated())
-							.andExpect(jsonPath("$.firstName").value("Mythri"))
-							.andReturn();
-		
-		// Clean up
-		String createdStudentLocation = result.getResponse().getHeader("Location");
-		long createdStudentId = Long.parseLong(
-								createdStudentLocation.replace("http://localhost/students/", ""));
-		studentRepository.delete(createdStudentId);
+		MvcResult result = null;
+		try {
+			result = mockMvc
+						.perform(post("/students")
+								.contentType(MediaType.APPLICATION_JSON_UTF8)
+								.accept(MediaType.APPLICATION_JSON_UTF8)
+								.content(studentJson))
+						.andDo(print())
+						.andExpect(status().isCreated())
+						.andExpect(jsonPath("$.firstName").value("Mythri"))
+						.andReturn();
+		} catch(Exception ex) {
+			log.error("Error creating a new student", ex);
+		} finally {
+			// Clean up
+			String createdStudentLocation = result.getResponse().getHeader("Location");
+			long createdStudentId = Long.parseLong(
+									createdStudentLocation.replace("http://localhost/students/", ""));
+			studentRepository.delete(createdStudentId);
+		}
 	}
 	
-	@SneakyThrows
 	@Test
 	public void replaceStudentShouldSucceed() {
 		// Given an existing student
@@ -93,7 +98,8 @@ public class StudentTests extends BaseTest {
 		studentJson.put("firstName", "Mythiri");
 		studentJson.put("lastName", "Arjun");
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(put("/students/{id}", savedStudent.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -102,12 +108,14 @@ public class StudentTests extends BaseTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.firstName").value("Mythiri"))
 			.andExpect(jsonPath("$.lastName").value("Arjun"));
-		
-		// Clean up
-		studentRepository.delete(savedStudent.getId());
+		} catch(Exception ex) {
+			log.error("Error replacing an existing student", ex);
+		} finally {
+			// Clean up
+			studentRepository.delete(savedStudent.getId());
+		}
 	}
 	
-	@SneakyThrows
 	@Test
 	public void updateStudentShouldSucceed() {
 		// Given an existing student
@@ -121,7 +129,8 @@ public class StudentTests extends BaseTest {
 		ObjectNode studentJson = objectMapper.createObjectNode();
 		studentJson.put("firstName", "Mythiri");
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(patch("/students/{id}", savedStudent.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -130,9 +139,12 @@ public class StudentTests extends BaseTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.firstName").value("Mythiri"))
 			.andExpect(jsonPath("$.lastName").value("Arjun"));
-		
-		// Clean up
-		studentRepository.delete(savedStudent.getId());
+		} catch(Exception ex) {
+			log.error("Error updating an existing student", ex);
+		} finally {
+			// Clean up
+			studentRepository.delete(savedStudent.getId());
+		}
 	}
 	
 	@SneakyThrows

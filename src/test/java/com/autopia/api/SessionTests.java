@@ -22,10 +22,12 @@ import com.autopia.data.entities.Session;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class SessionTests extends BaseTest {
 	
 	@SneakyThrows
@@ -71,25 +73,30 @@ public class SessionTests extends BaseTest {
 		
 		// When I create a new entry for the session
 		// Then it should succeed
-		MvcResult result = mockMvc
-							.perform(post("/sessions")
-									.contentType(MediaType.APPLICATION_JSON_UTF8)
-									.accept(MediaType.APPLICATION_JSON_UTF8)
-									.content(sessionJson.toString()))
-							.andDo(print())
-							.andExpect(status().isCreated())
-							.andExpect(jsonPath("$._links.enrolment.href").exists())
-							.andExpect(jsonPath("$.startTime").value("2017-11-22T17:00:00Z"))	// Always return UTC
-							.andExpect(jsonPath("$.endTime").value("2017-11-22T17:30:00Z"))
-							.andExpect(jsonPath("$.sessionCompleted").value(false))
-							.andExpect(jsonPath("$.feePaid").value(0))
-							.andReturn();
-		
-		// Clean up
-		String createdSessionLocation = result.getResponse().getHeader("Location");
-		long createdSessionId = Long.parseLong(
-								createdSessionLocation.replace("http://localhost/sessions/", ""));
-		sessionRepository.delete(createdSessionId);
+		MvcResult result = null;
+		try {
+			result = mockMvc
+						.perform(post("/sessions")
+								.contentType(MediaType.APPLICATION_JSON_UTF8)
+								.accept(MediaType.APPLICATION_JSON_UTF8)
+								.content(sessionJson.toString()))
+						.andDo(print())
+						.andExpect(status().isCreated())
+						.andExpect(jsonPath("$._links.enrolment.href").exists())
+						.andExpect(jsonPath("$.startTime").value("2017-11-22T17:00:00Z"))	// Always return UTC
+						.andExpect(jsonPath("$.endTime").value("2017-11-22T17:30:00Z"))
+						.andExpect(jsonPath("$.sessionCompleted").value(false))
+						.andExpect(jsonPath("$.feePaid").value(0))
+						.andReturn();
+		} catch(Exception ex) {
+			log.error("Error creating a new session", ex);
+		} finally {
+			// Clean up
+			String createdSessionLocation = result.getResponse().getHeader("Location");
+			long createdSessionId = Long.parseLong(
+									createdSessionLocation.replace("http://localhost/sessions/", ""));
+			sessionRepository.delete(createdSessionId);
+		}
 	}
 	
 	@SneakyThrows
@@ -111,7 +118,8 @@ public class SessionTests extends BaseTest {
 		sessionJson.put("startTime", "2017-11-22T12:00:00-05:00");
 		sessionJson.put("endTime", "2017-11-22T12:30:00-05:00");
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(put("/sessions/{id}", savedSession.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -123,9 +131,12 @@ public class SessionTests extends BaseTest {
 			.andExpect(jsonPath("$.endTime").value("2017-11-22T17:30:00Z"))
 			.andExpect(jsonPath("$.sessionCompleted").value(false))
 			.andExpect(jsonPath("$.feePaid").value(0));
-		
-		// Clean up
-		sessionRepository.delete(savedSession.getId());
+		} catch(Exception ex) {
+			log.error("Error replacing an existing session", ex);
+		} finally {
+			// Clean up
+			sessionRepository.delete(savedSession.getId());
+		}
 	}
 	
 	@SneakyThrows
@@ -146,7 +157,8 @@ public class SessionTests extends BaseTest {
 		sessionJson.put("sessionCompleted", true);
 		sessionJson.put("feePaid", 20);
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(patch("/sessions/{id}", savedSession.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -158,9 +170,12 @@ public class SessionTests extends BaseTest {
 			.andExpect(jsonPath("$.endTime").value("2017-11-22T11:30:00Z"))
 			.andExpect(jsonPath("$.sessionCompleted").value(true))
 			.andExpect(jsonPath("$.feePaid").value(20));
-		
-		// Clean up
-		sessionRepository.delete(savedSession.getId());
+		} catch(Exception ex) {
+			log.error("Error updating an existing session", ex);
+		} finally {
+			// Clean up
+			sessionRepository.delete(savedSession.getId());
+		}
 	}
 	
 	@SneakyThrows

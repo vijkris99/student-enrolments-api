@@ -68,76 +68,79 @@ public class EnrolmentTests extends BaseTest {
 		enrolmentJson.put("sessionFee", 20);
 		//enrolmentJson.put("startDate", LocalDate.now().toString());
 		
-		log.info(enrolmentJson.toString());
-		log.info(objectMapper.writeValueAsString(enrolmentJson));
-		
 		// When I enroll the student with the teacher to learn the skill
-		MvcResult result = mockMvc
-							.perform(post("/enrolments")
-									.contentType(MediaType.APPLICATION_JSON_UTF8)
-									.accept(MediaType.APPLICATION_JSON_UTF8)
-									.content(enrolmentJson.toString()))
-							.andDo(print())
-							.andExpect(status().isCreated())
-							.andExpect(jsonPath("$.sessionFee", is(20)))
-							.andExpect(jsonPath("$.balanceDue", is(0)))
-							.andExpect(jsonPath("$.isActive", is(true)))
-							.andReturn();
-		
-		String createdEnrolmentLocation = result.getResponse().getHeader("Location");
-		long createdEnrolmentId = Long.parseLong(
-								createdEnrolmentLocation.replace("http://localhost/enrolments/", ""));
-		
-		// Then the enrolment should be associated with the skill
-		mockMvc
-			.perform(get("/enrolments/{id}/skill", createdEnrolmentId))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.skillName", is(skill2.getSkillName())));
-		
-		// And the skill should be associated with the enrolment
-		mockMvc
-			.perform(get("/enrolments/search/findBySkill")
-					.param("skill", "/skills/2"))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-											containsString("/enrolments/" + createdEnrolmentId)));
-		
-		// And the enrolment should be associated with the teacher
-		mockMvc
-			.perform(get("/enrolments/{id}/teacher", createdEnrolmentId))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.firstName", is(teacher2.getFirstName())));
-		
-		// And the teacher should be associated with the enrolment
-		mockMvc
-			.perform(get("/enrolments/search/findByTeacher")
-					.param("teacher", "/teachers/2"))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-											containsString("/enrolments/" + createdEnrolmentId)));
-		
-		// And the enrolment should be associated with the student
-		mockMvc
-			.perform(get("/enrolments/{id}/student", createdEnrolmentId))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.firstName", is(student2.getFirstName())));
-		
-		// And the student should be associated with the enrolment
-		mockMvc
-			.perform(get("/enrolments/search/findByStudent")
-					.param("student", "students/2"))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-											containsString("/enrolments/" + createdEnrolmentId)));
-		
-		// Clean up
-		enrolmentRepository.delete(createdEnrolmentId);
+		MvcResult result = null;
+		long createdEnrolmentId = 0;
+		try {
+			result = mockMvc
+						.perform(post("/enrolments")
+								.contentType(MediaType.APPLICATION_JSON_UTF8)
+								.accept(MediaType.APPLICATION_JSON_UTF8)
+								.content(enrolmentJson.toString()))
+						.andDo(print())
+						.andExpect(status().isCreated())
+						.andExpect(jsonPath("$.sessionFee", is(20)))
+						.andExpect(jsonPath("$.balanceDue", is(0)))
+						.andExpect(jsonPath("$.isActive", is(true)))
+						.andReturn();
+			
+			String createdEnrolmentLocation = result.getResponse().getHeader("Location");
+			createdEnrolmentId = Long.parseLong(
+									createdEnrolmentLocation.replace("http://localhost/enrolments/", ""));
+			
+			// Then the enrolment should be associated with the skill
+			mockMvc
+				.perform(get("/enrolments/{id}/skill", createdEnrolmentId))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.skillName", is(skill2.getSkillName())));
+			
+			// And the skill should be associated with the enrolment
+			mockMvc
+				.perform(get("/enrolments/search/findBySkill")
+						.param("skill", "/skills/2"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+												containsString("/enrolments/" + createdEnrolmentId)));
+			
+			// And the enrolment should be associated with the teacher
+			mockMvc
+				.perform(get("/enrolments/{id}/teacher", createdEnrolmentId))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.firstName", is(teacher2.getFirstName())));
+			
+			// And the teacher should be associated with the enrolment
+			mockMvc
+				.perform(get("/enrolments/search/findByTeacher")
+						.param("teacher", "/teachers/2"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+												containsString("/enrolments/" + createdEnrolmentId)));
+			
+			// And the enrolment should be associated with the student
+			mockMvc
+				.perform(get("/enrolments/{id}/student", createdEnrolmentId))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.firstName", is(student2.getFirstName())));
+			
+			// And the student should be associated with the enrolment
+			mockMvc
+				.perform(get("/enrolments/search/findByStudent")
+						.param("student", "students/2"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+												containsString("/enrolments/" + createdEnrolmentId)));
+		} catch(Exception ex) {
+			log.error("Error creating a new enrolment", ex);
+		} finally {
+			// Clean up
+			enrolmentRepository.delete(createdEnrolmentId);
+		}
 	}
 	
 	@SneakyThrows
@@ -159,7 +162,8 @@ public class EnrolmentTests extends BaseTest {
 		enrolmentJson.put("student", "/students/2");
 		enrolmentJson.put("sessionFee", 25);
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(put("/enrolments/{id}", savedEnrolment.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -169,9 +173,12 @@ public class EnrolmentTests extends BaseTest {
 			.andExpect(jsonPath("$.sessionFee", is(25)))
 			.andExpect(jsonPath("$.balanceDue", is(0)))
 			.andExpect(jsonPath("$.isActive", is(true)));
-		
-		// Clean up
-		enrolmentRepository.delete(savedEnrolment.getId());
+		} catch(Exception ex) {
+			log.error("Error replacing an existing enrolment", ex);
+		} finally {
+			// Clean up
+			enrolmentRepository.delete(savedEnrolment.getId());
+		}
 	}
 	
 	@SneakyThrows
@@ -190,7 +197,8 @@ public class EnrolmentTests extends BaseTest {
 		ObjectNode enrolmentJson = objectMapper.createObjectNode();
 		enrolmentJson.put("sessionFee", 25);
 		
-		mockMvc
+		try {
+			mockMvc
 			.perform(patch("/enrolments/{id}", savedEnrolment.getId())
 					.contentType(MediaType.APPLICATION_JSON_UTF8)
 					.accept(MediaType.APPLICATION_JSON_UTF8)
@@ -200,9 +208,12 @@ public class EnrolmentTests extends BaseTest {
 			.andExpect(jsonPath("$.sessionFee", is(25)))
 			.andExpect(jsonPath("$.balanceDue", is(0)))
 			.andExpect(jsonPath("$.isActive", is(true)));
-		
-		// Clean up
-		enrolmentRepository.delete(savedEnrolment.getId());
+		} catch(Exception ex) {
+			log.error("Error updating an existing enrolment", ex);
+		} finally {
+			// Clean up
+			enrolmentRepository.delete(savedEnrolment.getId());
+		}
 	}
 	
 	@SneakyThrows
