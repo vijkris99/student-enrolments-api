@@ -20,13 +20,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(
-	name="Sessions",
-	uniqueConstraints=@UniqueConstraint(columnNames={"startTime"})
+	name="CancelledSessions",
+	uniqueConstraints=@UniqueConstraint(columnNames={"startTime", "endTime"})
 )
 @Entity
 @Data
 @NoArgsConstructor
-public class Session {
+public class CancelledSession {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -45,6 +45,6 @@ public class Session {
 	@Column(nullable=false)
 	private ZonedDateTime endTime;
 	
-	private Boolean sessionCompleted = false;
-	private Integer feePaid = 0;
+	private String cancelledBy = "N/A";
+	private String cancelledReason = "N/A";
 }
