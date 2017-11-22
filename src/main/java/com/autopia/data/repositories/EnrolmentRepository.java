@@ -1,5 +1,6 @@
 package com.autopia.data.repositories;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -19,4 +20,8 @@ public interface EnrolmentRepository extends PagingAndSortingRepository<Enrolmen
 	List<Enrolment> findBySkill(@Param("skill") Skill skill);
 	
 	List<Enrolment> findByIsActive(@Param("isActive") Boolean isActive);
+	
+	List<Enrolment> findByStartDateAfter(@Param("startDateAfter") ZonedDateTime startDateAfter);
+	
+	List<Enrolment> findByStartDateBefore(@Param("startDateBefore") ZonedDateTime startDateBefore);
 }

@@ -15,8 +15,10 @@ public interface CancelledSessionRepository extends PagingAndSortingRepository<C
 	
 	CancelledSession findByStartTime(@Param("startTime") ZonedDateTime startTime);
 	
-	CancelledSession findByStartAndEndTime(@Param("startTime") ZonedDateTime startTime,
+	CancelledSession findByStartTimeAndEndTime(@Param("startTime") ZonedDateTime startTime,
 											@Param("startTime") ZonedDateTime endTime);
 	
-	List<CancelledSession> findBySessionCompleted(@Param("sessionCompleted") Boolean sessionCompleted);
+	List<CancelledSession> findByCancelledBy(@Param("cancelledBy") String cancelledBy);
+	
+	List<CancelledSession> findByCancelledReason(@Param("cancelledReason") String cancelledReason);
 }

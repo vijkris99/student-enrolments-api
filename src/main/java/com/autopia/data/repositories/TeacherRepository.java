@@ -15,8 +15,8 @@ public interface TeacherRepository extends PagingAndSortingRepository<Teacher, L
 	
 	List<Teacher> findByLastName(@Param("lastName") String lastName);
 	
-	List<Teacher> findByName(@Param("firstName") String firstName,
-								@Param("lastName") String lastName);
+	List<Teacher> findByFirstNameAndLastName(@Param("firstName") String firstName,
+												@Param("lastName") String lastName);
 	
 	List<Teacher> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

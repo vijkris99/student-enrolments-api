@@ -15,7 +15,7 @@ public interface SessionRepository extends PagingAndSortingRepository<Session, L
 	
 	Session findByStartTime(@Param("startTime") ZonedDateTime startTime);
 	
-	Session findByStartAndEndTime(@Param("startTime") ZonedDateTime startTime,
+	Session findByStartTimeAndEndTime(@Param("startTime") ZonedDateTime startTime,
 										@Param("startTime") ZonedDateTime endTime);
 	
 	List<Session> findBySessionCompleted(@Param("sessionCompleted") Boolean sessionCompleted);
