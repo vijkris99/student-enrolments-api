@@ -17,4 +17,6 @@ public interface EnrolmentRepository extends PagingAndSortingRepository<Enrolmen
 	List<Enrolment> findByStudent(@Param("student") Student student);
 	
 	List<Enrolment> findBySkill(@Param("skill") Skill skill);
+	
+	List<Enrolment> findByIsActive(@Param("isActive") Boolean isActive);
 }

@@ -1,5 +1,6 @@
 package com.autopia.data.repositories;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -11,4 +12,11 @@ import com.autopia.data.entities.Session;
 public interface SessionRepository extends PagingAndSortingRepository<Session, Long> {
 	
 	List<Session> findByEnrolment(@Param("enrolment") Enrolment enrolment);
+	
+	Session findByStartTime(@Param("startTime") ZonedDateTime startTime);
+	
+	Session findByStartAndEndTime(@Param("startTime") ZonedDateTime startTime,
+										@Param("startTime") ZonedDateTime endTime);
+	
+	List<Session> findBySessionCompleted(@Param("sessionCompleted") Boolean sessionCompleted);
 }
