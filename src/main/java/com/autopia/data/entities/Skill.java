@@ -1,6 +1,6 @@
 package com.autopia.data.entities;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -21,7 +21,8 @@ import lombok.Setter;
 	uniqueConstraints=@UniqueConstraint(columnNames={"skillName"})
 )
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Skill {
 	
@@ -34,5 +35,5 @@ public class Skill {
 	private String skillName;
 	
 	@ManyToMany(mappedBy="skills")
-	private List<Teacher> teachers;
+	private Set<Teacher> teachers;
 }

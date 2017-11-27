@@ -3,6 +3,7 @@ package com.autopia.api;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.After;
 import org.junit.Test;
@@ -17,29 +18,6 @@ import lombok.SneakyThrows;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TeacherSkillsTests extends BaseTest {
-	
-	@Test
-	@SneakyThrows
-	public void shouldNotBeAbleToAssociateSameSkillTwiceWithSameTeacher() {
-		// Given a teacher with an associated skill
-		mockMvc
-			.perform(post("/teachers/{id}/skills", 1)
-					.contentType("text/uri-list")
-					.accept(MediaType.APPLICATION_JSON_UTF8)
-					.content("/skills/1"))
-			.andDo(print())
-			.andExpect(status().isNoContent());
-		
-		// When I try to associate the same skill again with the teacher
-		// Then I should get a conflict error
-		mockMvc
-			.perform(post("/teachers/{id}/skills", 1)
-					.contentType("text/uri-list")
-					.accept(MediaType.APPLICATION_JSON_UTF8)
-					.content("/skills/1"))
-			.andDo(print())
-			.andExpect(status().isConflict());
-	}
 	
 	@Test
 	@SneakyThrows
@@ -90,8 +68,8 @@ public class TeacherSkillsTests extends BaseTest {
 			.perform(get("/teachers/{id}/skills", 1))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.skills[0].skillName").value(skill1.getSkillName()))
-			.andExpect(jsonPath("$._embedded.skills[1].skillName").value(skill2.getSkillName()));
+			.andExpect(jsonPath("$._embedded.skills[*].skillName",
+						hasItems(skill1.getSkillName(),skill2.getSkillName())));
 	}
 	
 	@Test
@@ -121,8 +99,8 @@ public class TeacherSkillsTests extends BaseTest {
 			.perform(get("/skills/{id}/teachers", 1))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.teachers[0].firstName").value(teacher1.getFirstName()))
-			.andExpect(jsonPath("$._embedded.teachers[1].firstName").value(teacher2.getFirstName()));
+			.andExpect(jsonPath("$._embedded.teachers[*].firstName",
+								hasItems(teacher1.getFirstName(), teacher2.getFirstName())));
 	}
 	
 	@Test
