@@ -39,6 +39,12 @@ public class TeacherTests {
 	}
 	
 	@Test
+	public void getTeachersShouldSucceed() {
+		List<Teacher> foundTeachers = (List<Teacher>) teacherRepository.findAll();
+		assertThat(foundTeachers.size()).isEqualTo(1);
+	}
+	
+	@Test
 	public void insertNewTeacherShouldSucceed() {
 		Teacher teacher = new Teacher();
 		teacher.setFirstName("Madhav");
@@ -96,6 +102,14 @@ public class TeacherTests {
 	@Test
 	public void findByPhoneNumberShouldReturnEmptyListWhenNotFound() {
 		List<Teacher> foundTeachers = teacherRepository.findByPhoneNumber("1234567890");
+		assertThat(foundTeachers.size()).isEqualTo(0);
+	}
+	
+	@Test
+	public void deleteTeacherShouldSucceed() {
+		teacherRepository.delete(teacherRepository.findByFirstName("Vijay"));
+		
+		List<Teacher> foundTeachers = (List<Teacher>) teacherRepository.findAll();
 		assertThat(foundTeachers.size()).isEqualTo(0);
 	}
 }
