@@ -143,4 +143,13 @@ public class SessionTests {
 		assertThat(foundSession.getSessionCompleted()).isEqualTo(false);
 		assertThat(foundSession.getFeePaid()).isEqualTo(0);
 	}
+	
+	@Test
+	public void countBySessionCompletedShouldSucceed() {
+		Long countSessionsCompleted = sessionRepository.countBySessionCompleted(false);
+		assertThat(countSessionsCompleted).isEqualTo(1);
+		
+		Long countSessionsNotCompleted = sessionRepository.countBySessionCompleted(true);
+		assertThat(countSessionsNotCompleted).isEqualTo(0);
+	}
 }

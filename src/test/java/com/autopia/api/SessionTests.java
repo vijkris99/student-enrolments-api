@@ -101,6 +101,20 @@ public class SessionTests extends BaseTest {
 	
 	@SneakyThrows
 	@Test
+	public void countBySessionCompletedShouldSucceed() {
+		mockMvc.perform(get("/sessions/search/countBySessionCompleted")
+							.param("sessionCompleted", "false"))
+				.andDo(print())
+				.andExpect(content().string("1"));
+		
+		mockMvc.perform(get("/sessions/search/countBySessionCompleted")
+							.param("sessionCompleted", "true"))
+				.andDo(print())
+				.andExpect(content().string("0"));
+	}
+	
+	@SneakyThrows
+	@Test
 	public void replaceSessionShouldSucceed() {
 		// Given an existing session
 		Session session = new Session();

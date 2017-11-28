@@ -11,10 +11,15 @@ public interface StudentRepository extends PagingAndSortingRepository<Student, L
 	
 	List<Student> findByFirstName(@Param("firstName") String firstName);
 	
+	List<Student> findByFirstNameIgnoreCase(@Param("firstName") String firstName);
+	
 	List<Student> findByLastName(@Param("lastName") String lastName);
 	
 	List<Student> findByFirstNameAndLastName(@Param("firstName") String firstName,
 												@Param("lastName") String lastName);
+	
+	List<Student> findByFirstNameAndLastNameAllIgnoreCase(@Param("firstName") String firstName,
+															@Param("lastName") String lastName);
 	
 	List<Student> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

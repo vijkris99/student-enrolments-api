@@ -19,4 +19,6 @@ public interface SessionRepository extends PagingAndSortingRepository<Session, L
 										@Param("startTime") ZonedDateTime endTime);
 	
 	List<Session> findBySessionCompleted(@Param("sessionCompleted") Boolean sessionCompleted);
+	
+	Long countBySessionCompleted(@Param("sessionCompleted") Boolean sessionCompleted);
 }

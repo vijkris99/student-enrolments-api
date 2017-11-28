@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -82,6 +83,30 @@ public class StudentTests extends BaseTest {
 									createdStudentLocation.replace("http://localhost/students/", ""));
 			studentRepository.delete(createdStudentId);
 		}
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByFirstName")
+					.param("firstName", "Pranav"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/1")));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameIgnoreCaseShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByFirstNameIgnoreCase")
+					.param("firstName", "praNav"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/1")));
 	}
 	
 	@Test

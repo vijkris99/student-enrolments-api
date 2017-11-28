@@ -61,6 +61,17 @@ public class StudentTests {
 	}
 	
 	@Test
+	public void findByFirstNameIgnoreCaseShouldWork() {
+		List<Student> foundStudents = studentRepository.findByFirstNameIgnoreCase("mythri");
+		assertThat(foundStudents.size()).isEqualTo(1);
+		
+		Student foundStudent = foundStudents.get(0);
+		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
+		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
+		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+	}
+	
+	@Test
 	public void findByLastNameShouldWork() {
 		List<Student> foundStudents = studentRepository.findByLastName("Arjun");
 		assertThat(foundStudents.size()).isEqualTo(1);
@@ -74,6 +85,17 @@ public class StudentTests {
 	@Test
 	public void findByFirstNameAndLastNameShouldWork() {
 		List<Student> foundStudents = studentRepository.findByFirstNameAndLastName("Mythri", "Arjun");
+		assertThat(foundStudents.size()).isEqualTo(1);
+		
+		Student foundStudent = foundStudents.get(0);
+		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
+		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
+		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+	}
+	
+	@Test
+	public void findByFirstNameAndLastNameAllIgnoreCaseShouldWork() {
+		List<Student> foundStudents = studentRepository.findByFirstNameAndLastNameAllIgnoreCase("mythrI", "aRjun");
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
 		Student foundStudent = foundStudents.get(0);
