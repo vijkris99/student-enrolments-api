@@ -58,7 +58,7 @@ public class SessionTests extends BaseTest {
 			.andExpect(jsonPath("$._links.enrolment.href").exists())
 			.andExpect(jsonPath("$.startTime").value("2017-11-22T12:00:00Z"))
 			.andExpect(jsonPath("$.endTime").value("2017-11-22T12:30:00Z"))
-			.andExpect(jsonPath("$.sessionCompleted").value(false))
+			.andExpect(jsonPath("$.completed").value(false))
 			.andExpect(jsonPath("$.feePaid").value(0));
 	}
 	
@@ -85,7 +85,7 @@ public class SessionTests extends BaseTest {
 						.andExpect(jsonPath("$._links.enrolment.href").exists())
 						.andExpect(jsonPath("$.startTime").value("2017-11-22T17:00:00Z"))	// Always return UTC
 						.andExpect(jsonPath("$.endTime").value("2017-11-22T17:30:00Z"))
-						.andExpect(jsonPath("$.sessionCompleted").value(false))
+						.andExpect(jsonPath("$.completed").value(false))
 						.andExpect(jsonPath("$.feePaid").value(0))
 						.andReturn();
 		} catch(Exception ex) {
@@ -101,14 +101,14 @@ public class SessionTests extends BaseTest {
 	
 	@SneakyThrows
 	@Test
-	public void countBySessionCompletedShouldSucceed() {
-		mockMvc.perform(get("/sessions/search/countBySessionCompleted")
-							.param("sessionCompleted", "false"))
+	public void countByCompletedShouldSucceed() {
+		mockMvc.perform(get("/sessions/search/countByCompleted")
+							.param("completed", "false"))
 				.andDo(print())
 				.andExpect(content().string("1"));
 		
-		mockMvc.perform(get("/sessions/search/countBySessionCompleted")
-							.param("sessionCompleted", "true"))
+		mockMvc.perform(get("/sessions/search/countByCompleted")
+							.param("completed", "true"))
 				.andDo(print())
 				.andExpect(content().string("0"));
 	}
@@ -143,7 +143,7 @@ public class SessionTests extends BaseTest {
 			.andExpect(jsonPath("$._links.enrolment.href").exists())
 			.andExpect(jsonPath("$.startTime").value("2017-11-22T17:00:00Z"))
 			.andExpect(jsonPath("$.endTime").value("2017-11-22T17:30:00Z"))
-			.andExpect(jsonPath("$.sessionCompleted").value(false))
+			.andExpect(jsonPath("$.completed").value(false))
 			.andExpect(jsonPath("$.feePaid").value(0));
 		} catch(Exception ex) {
 			log.error("Error replacing an existing session", ex);
@@ -168,7 +168,7 @@ public class SessionTests extends BaseTest {
 		// When I update the existing entry for the session
 		// Then it should succeed
 		ObjectNode sessionJson = objectMapper.createObjectNode();
-		sessionJson.put("sessionCompleted", true);
+		sessionJson.put("completed", true);
 		sessionJson.put("feePaid", 20);
 		
 		try {
@@ -182,7 +182,7 @@ public class SessionTests extends BaseTest {
 			.andExpect(jsonPath("$._links.enrolment.href").exists())
 			.andExpect(jsonPath("$.startTime").value("2017-11-22T11:00:00Z"))
 			.andExpect(jsonPath("$.endTime").value("2017-11-22T11:30:00Z"))
-			.andExpect(jsonPath("$.sessionCompleted").value(true))
+			.andExpect(jsonPath("$.completed").value(true))
 			.andExpect(jsonPath("$.feePaid").value(20));
 		} catch(Exception ex) {
 			log.error("Error updating an existing session", ex);

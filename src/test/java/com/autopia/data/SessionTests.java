@@ -89,7 +89,7 @@ public class SessionTests {
 		assertThat(savedSession2.getEnrolment()).isEqualTo(enrolment1);
 		assertThat(savedSession2.getStartTime()).isEqualTo(startTime.plusMinutes(30));
 		assertThat(savedSession2.getEndTime()).isEqualTo(endTime.plusMinutes(30));
-		assertThat(savedSession2.getSessionCompleted()).isEqualTo(false);
+		assertThat(savedSession2.getCompleted()).isEqualTo(false);
 		assertThat(savedSession2.getFeePaid()).isEqualTo(0);
 	}
 	
@@ -101,7 +101,7 @@ public class SessionTests {
 		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
 		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
 		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getSessionCompleted()).isEqualTo(false);
+		assertThat(foundSession.getCompleted()).isEqualTo(false);
 		assertThat(foundSession.getFeePaid()).isEqualTo(0);
 	}
 	
@@ -113,7 +113,7 @@ public class SessionTests {
 		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
 		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
 		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getSessionCompleted()).isEqualTo(false);
+		assertThat(foundSession.getCompleted()).isEqualTo(false);
 		assertThat(foundSession.getFeePaid()).isEqualTo(0);
 	}
 	
@@ -126,13 +126,13 @@ public class SessionTests {
 		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
 		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
 		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getSessionCompleted()).isEqualTo(false);
+		assertThat(foundSession.getCompleted()).isEqualTo(false);
 		assertThat(foundSession.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test
 	public void findBySessionCompletedShouldSucceed() {
-		List<Session> foundSessions = sessionRepository.findBySessionCompleted(false);
+		List<Session> foundSessions = sessionRepository.findByCompleted(false);
 		assertThat(foundSessions.size()).isEqualTo(1);
 		Session foundSession = foundSessions.get(0);
 		
@@ -140,16 +140,16 @@ public class SessionTests {
 		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
 		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
 		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getSessionCompleted()).isEqualTo(false);
+		assertThat(foundSession.getCompleted()).isEqualTo(false);
 		assertThat(foundSession.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test
 	public void countBySessionCompletedShouldSucceed() {
-		Long countSessionsCompleted = sessionRepository.countBySessionCompleted(false);
+		Long countSessionsCompleted = sessionRepository.countByCompleted(false);
 		assertThat(countSessionsCompleted).isEqualTo(1);
 		
-		Long countSessionsNotCompleted = sessionRepository.countBySessionCompleted(true);
+		Long countSessionsNotCompleted = sessionRepository.countByCompleted(true);
 		assertThat(countSessionsNotCompleted).isEqualTo(0);
 	}
 }

@@ -45,6 +45,6 @@ public class Session {
 	@Column(nullable=false)
 	private ZonedDateTime endTime;
 	
-	private Boolean sessionCompleted = false;
+	private Boolean completed = false;
 	private Integer feePaid = 0;
 }
