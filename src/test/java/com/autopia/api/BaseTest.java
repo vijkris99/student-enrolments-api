@@ -68,8 +68,8 @@ public abstract class BaseTest {
 			teacher2.setLastName("Bhatki");
 			teacher2.setPhoneNumber("1234567890");
 			
-			skill1.setSkillName("Keyboard");
-			skill2.setSkillName("Guitar");
+			skill1.setName("Keyboard");
+			skill2.setName("Guitar");
 			
 			student1.setFirstName("Pranav");
 			student2.setFirstName("Arwin");

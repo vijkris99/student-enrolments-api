@@ -49,14 +49,14 @@ public class SkillTests extends BaseTest {
 		mockMvc.perform(get("/skills/{id}", 1))
 						.andDo(print())
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.skillName").value("Keyboard"));
+						.andExpect(jsonPath("$.name").value("Keyboard"));
 	}
 	
 	@SneakyThrows
 	@Test
 	public void createSkillShouldSucceed() {
 		// Given a new skill
-		String skillJson = "{\"skillName\":\"Vocals\"}";
+		String skillJson = "{\"name\":\"Vocals\"}";
 		
 		// When I create a new entry for the skill
 		// Then it should succeed
@@ -69,7 +69,7 @@ public class SkillTests extends BaseTest {
 								.content(skillJson))
 						.andDo(print())
 						.andExpect(status().isCreated())
-						.andExpect(jsonPath("$.skillName", is("Vocals")))
+						.andExpect(jsonPath("$.name", is("Vocals")))
 						.andReturn();
 		} catch(Exception ex) {
 			log.error("Error creating a new skill", ex);
@@ -87,13 +87,13 @@ public class SkillTests extends BaseTest {
 	public void replaceSkillShouldSucceed() {
 		// Given an existing skill
 		Skill skill = new Skill();
-		skill.setSkillName("Vocals");
+		skill.setName("Vocals");
 		Skill savedSkill = skillRepository.save(skill);
 		
 		// When I replace the existing entry for the skill
 		// Then it should succeed
 		ObjectNode skillJson = objectMapper.createObjectNode();
-		skillJson.put("skillName", "Violin");
+		skillJson.put("name", "Violin");
 		
 		try {
 			mockMvc
@@ -103,7 +103,7 @@ public class SkillTests extends BaseTest {
 					.content(skillJson.toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.skillName").value("Violin"));
+			.andExpect(jsonPath("$.name").value("Violin"));
 		} catch(Exception ex) {
 			log.error("Error replacing an existing skill", ex);
 		} finally {
@@ -117,13 +117,13 @@ public class SkillTests extends BaseTest {
 	public void updateSkillShouldSucceed() {
 		// Given an existing skill
 		Skill skill = new Skill();
-		skill.setSkillName("Vocals");
+		skill.setName("Vocals");
 		Skill savedSkill = skillRepository.save(skill);
 		
 		// When I update the existing entry for the skill
 		// Then it should succeed
 		ObjectNode skillJson = objectMapper.createObjectNode();
-		skillJson.put("skillName", "Violin");
+		skillJson.put("name", "Violin");
 		
 		try {
 			mockMvc
@@ -133,7 +133,7 @@ public class SkillTests extends BaseTest {
 					.content(skillJson.toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.skillName").value("Violin"));
+			.andExpect(jsonPath("$.name").value("Violin"));
 		} catch(Exception ex) {
 			log.error("Error updating an existing skill", ex);
 		} finally {
@@ -147,7 +147,7 @@ public class SkillTests extends BaseTest {
 	public void deleteSkillShouldSucceed() {
 		// Given an existing skill
 		Skill skill = new Skill();
-		skill.setSkillName("Vocals");
+		skill.setName("Vocals");
 		Skill savedSkill = skillRepository.save(skill);
 		
 		// When I delete the skill

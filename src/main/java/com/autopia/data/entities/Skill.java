@@ -18,7 +18,7 @@ import lombok.Setter;
 
 @Table(
 	name="Skills",
-	uniqueConstraints=@UniqueConstraint(columnNames={"skillName"})
+	uniqueConstraints=@UniqueConstraint(columnNames={"name"})
 )
 @Entity
 @Getter
@@ -32,7 +32,7 @@ public class Skill {
 	private Long id;
 	
 	@Column(nullable=false)
-	private String skillName;
+	private String name;
 	
 	@ManyToMany(mappedBy="skills")
 	private Set<Teacher> teachers;

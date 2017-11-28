@@ -19,6 +19,10 @@ public interface EnrolmentRepository extends PagingAndSortingRepository<Enrolmen
 	
 	List<Enrolment> findBySkill(@Param("skill") Skill skill);
 	
+	List<Enrolment> findBySkillName(@Param("skillName") String skillName);
+	
+	List<Enrolment> findByBalanceDueGreaterThan(@Param("balanceDueGreaterThan") Integer balanceDueGreaterThan);
+	
 	List<Enrolment> findByIsActive(@Param("isActive") Boolean isActive);
 	
 	List<Enrolment> findByStartDateAfter(@Param("startDateAfter") ZonedDateTime startDateAfter);

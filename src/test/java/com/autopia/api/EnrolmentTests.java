@@ -16,8 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -58,8 +62,8 @@ public class EnrolmentTests extends BaseTest {
 	
 	@SneakyThrows
 	@Test
-	public void enrolmentAssociationsShouldBeBidirectional() {
-		//Given a teacher, skill and student
+	public void createEnrolmentShouldSucceed() {
+		// Given a teacher, skill and student
 		ObjectNode enrolmentJson = objectMapper.createObjectNode();
 		
 		enrolmentJson.put("teacher", "/teachers/2");
@@ -93,16 +97,7 @@ public class EnrolmentTests extends BaseTest {
 				.perform(get("/enrolments/{id}/skill", createdEnrolmentId))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.skillName", is(skill2.getSkillName())));
-			
-			// And the skill should be associated with the enrolment
-			mockMvc
-				.perform(get("/enrolments/search/findBySkill")
-						.param("skill", "/skills/2"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-												containsString("/enrolments/" + createdEnrolmentId)));
+				.andExpect(jsonPath("$.name", is(skill2.getName())));
 			
 			// And the enrolment should be associated with the teacher
 			mockMvc
@@ -111,36 +106,66 @@ public class EnrolmentTests extends BaseTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstName", is(teacher2.getFirstName())));
 			
-			// And the teacher should be associated with the enrolment
-			mockMvc
-				.perform(get("/enrolments/search/findByTeacher")
-						.param("teacher", "/teachers/2"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-												containsString("/enrolments/" + createdEnrolmentId)));
-			
 			// And the enrolment should be associated with the student
 			mockMvc
 				.perform(get("/enrolments/{id}/student", createdEnrolmentId))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstName", is(student2.getFirstName())));
-			
-			// And the student should be associated with the enrolment
-			mockMvc
-				.perform(get("/enrolments/search/findByStudent")
-						.param("student", "students/2"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-												containsString("/enrolments/" + createdEnrolmentId)));
 		} catch(Exception ex) {
 			log.error("Error creating a new enrolment", ex);
 		} finally {
 			// Clean up
 			enrolmentRepository.delete(createdEnrolmentId);
 		}
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findBySkillShouldWork() {
+		mockMvc
+			.perform(get("/enrolments/search/findBySkill")
+					.param("skill", "/skills/1"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+											containsString("/enrolments/1")));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findBySkillNameShouldWork() {
+		mockMvc
+			.perform(get("/enrolments/search/findBySkillName")
+					.param("skillName", "Keyboard"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+											containsString("/enrolments/1")));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByTeacherShouldWork() {
+		mockMvc
+		.perform(get("/enrolments/search/findByTeacher")
+				.param("teacher", "/teachers/1"))
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+										containsString("/enrolments/1")));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByStudentShouldWork() {
+		mockMvc
+		.perform(get("/enrolments/search/findByStudent")
+				.param("student", "/students/1"))
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+										containsString("/enrolments/1")));
 	}
 	
 	@SneakyThrows
@@ -233,6 +258,8 @@ public class EnrolmentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isNoContent());
 		
-		// TODO: Search and make sure the enrolment got deleted
+		// And the enrolment should no longer be found in the system
+		List<Enrolment> foundEnrolments = enrolmentRepository.findByTeacher(teacher2);
+		assertThat(foundEnrolments.size(), is(0));
 	}
 }

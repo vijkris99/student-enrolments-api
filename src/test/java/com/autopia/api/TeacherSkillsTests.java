@@ -37,7 +37,7 @@ public class TeacherSkillsTests extends BaseTest {
 			.perform(get("/teachers/{id}/skills", 1))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.skills[:1].skillName").value(skill1.getSkillName()));
+			.andExpect(jsonPath("$._embedded.skills[:1].name").value(skill1.getName()));
 		
 		// And the skill should be associated with the teacher
 		mockMvc
@@ -68,8 +68,8 @@ public class TeacherSkillsTests extends BaseTest {
 			.perform(get("/teachers/{id}/skills", 1))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._embedded.skills[*].skillName",
-						hasItems(skill1.getSkillName(),skill2.getSkillName())));
+			.andExpect(jsonPath("$._embedded.skills[*].name",
+						hasItems(skill1.getName(),skill2.getName())));
 	}
 	
 	@Test

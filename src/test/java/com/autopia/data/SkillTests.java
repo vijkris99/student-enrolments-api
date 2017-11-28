@@ -33,38 +33,38 @@ public class SkillTests {
 	@Before
 	public void setup() {
 		Skill skill = new Skill();
-		skill.setSkillName("Keyboard");
+		skill.setName("Keyboard");
 		entityManager.persist(skill);
 	}
 	
 	@Test
 	public void insertNewSkillShouldSucceed() {
 		Skill skill = new Skill();
-		skill.setSkillName("Guitar");
+		skill.setName("Guitar");
 		Skill foundSkill = skillRepository.save(skill);
 		
-		assertThat(foundSkill.getSkillName()).isEqualTo("Guitar");
+		assertThat(foundSkill.getName()).isEqualTo("Guitar");
 	}
 	
 	@Test(expected=DataIntegrityViolationException.class)
 	public void skillNameShouldBeUnique() {
 		Skill skill = new Skill();
-		skill.setSkillName("Keyboard");
+		skill.setName("Keyboard");
 		skillRepository.save(skill);
 	}
 	
 	@Test
 	public void findBySkillNameShouldWork() {
-		List<Skill> foundSkills = skillRepository.findBySkillName("Keyboard");
+		List<Skill> foundSkills = skillRepository.findByName("Keyboard");
 		assertThat(foundSkills.size()).isEqualTo(1);
 		
 		Skill foundSkill = foundSkills.get(0);
-		assertThat(foundSkill.getSkillName()).isEqualTo("Keyboard");
+		assertThat(foundSkill.getName()).isEqualTo("Keyboard");
 	}
 	
 	@Test
 	public void findBySkillNameShouldReturnEmptyListWhenNotFound() {
-		List<Skill> foundSkills = skillRepository.findBySkillName("Vocals");
+		List<Skill> foundSkills = skillRepository.findByName("Vocals");
 		assertThat(foundSkills.size()).isEqualTo(0);
 	}
 }

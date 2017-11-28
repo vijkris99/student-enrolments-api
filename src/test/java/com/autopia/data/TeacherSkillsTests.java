@@ -37,11 +37,11 @@ public class TeacherSkillsTests {
 	@Before
 	public void setup() {
 		Skill skill1 = new Skill();
-		skill1.setSkillName("Keyboard");
+		skill1.setName("Keyboard");
 		entityManager.persist(skill1);
 		
 		Skill skill2 = new Skill();
-		skill2.setSkillName("Guitar");
+		skill2.setName("Guitar");
 		entityManager.persist(skill2);
 		
 		Teacher teacher1 = new Teacher();
@@ -66,7 +66,7 @@ public class TeacherSkillsTests {
 		//Skill skill1 = skillRepository.findOne((long) 1);
 		
 		Teacher teacher1 = teacherRepository.findByFirstName("Vijay").get(0);
-		Skill skill1 = skillRepository.findBySkillName("Keyboard").get(0);
+		Skill skill1 = skillRepository.findByName("Keyboard").get(0);
 		
 		// When I associate the skill with the teacher
 		Set<Skill> skills = new HashSet<>();
@@ -84,7 +84,7 @@ public class TeacherSkillsTests {
 		assertThat(foundTeacher1.getSkills()).contains(skill1);
 		
 		// And the skill should be associated with the teacher
-		Skill foundSkill1 = skillRepository.findBySkillName("Keyboard").get(0);
+		Skill foundSkill1 = skillRepository.findByName("Keyboard").get(0);
 		assertThat(foundSkill1.getTeachers()).contains(teacher1);
 	}
 	
@@ -92,8 +92,8 @@ public class TeacherSkillsTests {
 	public void shouldBeAbleToAssociateMultipleSkillsWithSameTeacher() {
 		// Given a teacher and 2 skills
 		Teacher teacher2 = teacherRepository.findByFirstName("Madhav").get(0);
-		Skill skill1 = skillRepository.findBySkillName("Keyboard").get(0);
-		Skill skill2 = skillRepository.findBySkillName("Guitar").get(0);
+		Skill skill1 = skillRepository.findByName("Keyboard").get(0);
+		Skill skill2 = skillRepository.findByName("Guitar").get(0);
 		
 		// When I associate both the skills with the teacher
 		Set<Skill> skills = new HashSet<>();
@@ -116,7 +116,7 @@ public class TeacherSkillsTests {
 	@Test
 	public void shouldBeAbleToAssociateOneSkillWithMultipleTeachers() {
 		// Given a skill and 2 teachers
-		Skill skill2 = skillRepository.findBySkillName("Guitar").get(0);
+		Skill skill2 = skillRepository.findByName("Guitar").get(0);
 		Teacher teacher1 = teacherRepository.findByFirstName("Vijay").get(0);
 		Teacher teacher2 = teacherRepository.findByFirstName("Madhav").get(0);
 		
@@ -136,7 +136,7 @@ public class TeacherSkillsTests {
 		teacherRepository.save(teacher2);
 		
 		// Then the skill should be associated with both the teachers
-		Skill foundSkill2 = skillRepository.findBySkillName("Guitar").get(0);
+		Skill foundSkill2 = skillRepository.findByName("Guitar").get(0);
 		assertThat(foundSkill2.getTeachers()).contains(teacher1, teacher2);
 	}
 	
@@ -144,7 +144,7 @@ public class TeacherSkillsTests {
 	public void shouldBeAbleToDisassociateSkillFromTeacher() {
 		//Given a teacher with one associated skill
 		Teacher teacher1 = teacherRepository.findByFirstName("Vijay").get(0);
-		Skill skill1 = skillRepository.findBySkillName("Keyboard").get(0);
+		Skill skill1 = skillRepository.findByName("Keyboard").get(0);
 		
 		Set<Skill> skills = new HashSet<>();
 		skills.add(skill1);
