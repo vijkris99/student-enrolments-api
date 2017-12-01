@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.autopia.data.entities.Session;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 public class SessionTests extends BaseTest {
 	
 	@SneakyThrows
@@ -52,7 +54,7 @@ public class SessionTests extends BaseTest {
 		// Then I should succeed
 		// And the session should contain a link to the corresponding enrolment
 		mockMvc
-			.perform(get("/sessions/{id}", 1))
+			.perform(get("/sessions/{id}", savedSession1.getId()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._links.enrolment.href").exists())
@@ -67,7 +69,7 @@ public class SessionTests extends BaseTest {
 	public void createSessionShouldSucceed() {
 		// Given a new session
 		ObjectNode sessionJson = objectMapper.createObjectNode();
-		sessionJson.put("enrolment", "/enrolments/1");
+		sessionJson.put("enrolment", "/enrolments/" + savedEnrolment1.getId());
 		sessionJson.put("startTime", "2017-11-22T12:00:00-05:00");	// Accept any time-zone
 		sessionJson.put("endTime", "2017-11-22T12:30:00-05:00");
 		
@@ -118,7 +120,7 @@ public class SessionTests extends BaseTest {
 	public void replaceSessionShouldSucceed() {
 		// Given an existing session
 		Session session = new Session();
-		session.setEnrolment(enrolment1);
+		session.setEnrolment(savedEnrolment1);
 		session.setStartTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
 												LocalTime.of(11, 00), ZoneId.of("Etc/UTC")));
 		session.setEndTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
@@ -128,7 +130,7 @@ public class SessionTests extends BaseTest {
 		// When I replace the existing entry for the session
 		// Then it should succeed
 		ObjectNode sessionJson = objectMapper.createObjectNode();
-		sessionJson.put("enrolment", "/enrolments/1");
+		sessionJson.put("enrolment", "/enrolments/" + savedEnrolment1.getId());
 		sessionJson.put("startTime", "2017-11-22T12:00:00-05:00");
 		sessionJson.put("endTime", "2017-11-22T12:30:00-05:00");
 		
@@ -158,7 +160,7 @@ public class SessionTests extends BaseTest {
 	public void updateSessionShouldSucceed() {
 		// Given an existing session
 		Session session = new Session();
-		session.setEnrolment(enrolment1);
+		session.setEnrolment(savedEnrolment1);
 		session.setStartTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
 												LocalTime.of(11, 00), ZoneId.of("Etc/UTC")));
 		session.setEndTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
@@ -197,7 +199,7 @@ public class SessionTests extends BaseTest {
 	public void deleteSessionShouldSucceed() {
 		// Given an existing session
 		Session session = new Session();
-		session.setEnrolment(enrolment1);
+		session.setEnrolment(savedEnrolment1);
 		session.setStartTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
 												LocalTime.of(11, 00), ZoneId.of("Etc/UTC")));
 		session.setEndTime(ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),

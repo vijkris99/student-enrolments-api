@@ -38,6 +38,8 @@ public class SessionTests {
 	
 	private Enrolment enrolment1;
 	
+	private Session session1;
+	
 	private ZonedDateTime startTime = ZonedDateTime.of(LocalDate.of(2017, Month.NOVEMBER, 22),
 														LocalTime.of(11, 00), ZoneId.of("Etc/UTC"));
 	
@@ -69,7 +71,7 @@ public class SessionTests {
 		enrolment1.setSessionFee(20);
 		entityManager.persist(enrolment1);
 		
-		Session session1 = new Session();
+		session1 = new Session();
 		session1.setEnrolment(enrolment1);
 		session1.setStartTime(startTime);
 		session1.setEndTime(endTime);
@@ -95,53 +97,53 @@ public class SessionTests {
 	
 	@Test
 	public void findByStartTimeShouldSucceed() {
-		Session foundSession = sessionRepository.findByStartTime(startTime);
+		Session foundSession1 = sessionRepository.findByStartTime(startTime);
 		
-		assertThat(foundSession).as("Found session should not be null").isNotNull();
-		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
-		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
-		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getCompleted()).isEqualTo(false);
-		assertThat(foundSession.getFeePaid()).isEqualTo(0);
+		assertThat(foundSession1).as("Found session should not be null").isNotNull();
+		assertThat(foundSession1.getEnrolment()).isEqualTo(enrolment1);
+		assertThat(foundSession1.getStartTime()).isEqualTo(startTime);
+		assertThat(foundSession1.getEndTime()).isEqualTo(endTime);
+		assertThat(foundSession1.getCompleted()).isEqualTo(false);
+		assertThat(foundSession1.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test
 	public void findByStartTimeAndEndTimeShouldSucceed() {
-		Session foundSession = sessionRepository.findByStartTimeAndEndTime(startTime, endTime);
+		Session foundSession1 = sessionRepository.findByStartTimeAndEndTime(startTime, endTime);
 		
-		assertThat(foundSession).as("Found session should not be null").isNotNull();
-		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
-		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
-		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getCompleted()).isEqualTo(false);
-		assertThat(foundSession.getFeePaid()).isEqualTo(0);
+		assertThat(foundSession1).as("Found session should not be null").isNotNull();
+		assertThat(foundSession1.getEnrolment()).isEqualTo(enrolment1);
+		assertThat(foundSession1.getStartTime()).isEqualTo(startTime);
+		assertThat(foundSession1.getEndTime()).isEqualTo(endTime);
+		assertThat(foundSession1.getCompleted()).isEqualTo(false);
+		assertThat(foundSession1.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test
 	public void findByEnrolmentShouldSucceed() {
 		List<Session> foundSessions = sessionRepository.findByEnrolment(enrolment1);
 		assertThat(foundSessions.size()).isEqualTo(1);
-		Session foundSession = foundSessions.get(0);
+		Session foundSession1 = foundSessions.get(0);
 		
-		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
-		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
-		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getCompleted()).isEqualTo(false);
-		assertThat(foundSession.getFeePaid()).isEqualTo(0);
+		assertThat(foundSession1.getEnrolment()).isEqualTo(enrolment1);
+		assertThat(foundSession1.getStartTime()).isEqualTo(startTime);
+		assertThat(foundSession1.getEndTime()).isEqualTo(endTime);
+		assertThat(foundSession1.getCompleted()).isEqualTo(false);
+		assertThat(foundSession1.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test
 	public void findBySessionCompletedShouldSucceed() {
 		List<Session> foundSessions = sessionRepository.findByCompleted(false);
 		assertThat(foundSessions.size()).isEqualTo(1);
-		Session foundSession = foundSessions.get(0);
+		Session foundSession1 = foundSessions.get(0);
 		
-		assertThat(foundSession).as("Found session should not be null").isNotNull();
-		assertThat(foundSession.getEnrolment()).isEqualTo(enrolment1);
-		assertThat(foundSession.getStartTime()).isEqualTo(startTime);
-		assertThat(foundSession.getEndTime()).isEqualTo(endTime);
-		assertThat(foundSession.getCompleted()).isEqualTo(false);
-		assertThat(foundSession.getFeePaid()).isEqualTo(0);
+		assertThat(foundSession1).as("Found session should not be null").isNotNull();
+		assertThat(foundSession1.getEnrolment()).isEqualTo(enrolment1);
+		assertThat(foundSession1.getStartTime()).isEqualTo(startTime);
+		assertThat(foundSession1.getEndTime()).isEqualTo(endTime);
+		assertThat(foundSession1.getCompleted()).isEqualTo(false);
+		assertThat(foundSession1.getFeePaid()).isEqualTo(0);
 	}
 	
 	@Test

@@ -28,36 +28,37 @@ public class StudentTests {
 	@Autowired
 	private StudentRepository studentRepository;
 	
+	private Student student1;
 	
 	@Before
 	public void setup() {
-		Student student = new Student();
-		student.setFirstName("Mythri");
-		student.setLastName("Arjun");
-		student.setPhoneNumber("9876543210");
-		entityManager.persist(student);
+		student1 = new Student();
+		student1.setFirstName("Mythri");
+		student1.setLastName("Arjun");
+		student1.setPhoneNumber("9876543210");
+		entityManager.persist(student1);
 	}
 	
 	@Test
 	public void insertNewStudentShouldSucceed() {
-		Student student = new Student();
-		student.setFirstName("Pranav");
-		student.setLastName("Kishore");
-		Student foundStudent = studentRepository.save(student);
+		Student student2 = new Student();
+		student2.setFirstName("Pranav");
+		student2.setLastName("Kishore");
+		Student savedStudent2 = studentRepository.save(student2);
 		
-		assertThat(foundStudent.getFirstName()).isEqualTo("Pranav");
-		assertThat(foundStudent.getLastName()).isEqualTo("Kishore");
+		assertThat(savedStudent2.getFirstName()).isEqualTo("Pranav");
+		assertThat(savedStudent2.getLastName()).isEqualTo("Kishore");
 	}
 	
 	@Test
 	public void findByFirstNameShouldWork() {
-		List<Student> foundStudents = studentRepository.findByFirstName("Mythri");
+		List<Student> foundStudents = studentRepository.findByFirstName(student1.getFirstName());
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test
@@ -65,32 +66,33 @@ public class StudentTests {
 		List<Student> foundStudents = studentRepository.findByFirstNameIgnoreCase("mythri");
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByLastNameShouldWork() {
-		List<Student> foundStudents = studentRepository.findByLastName("Arjun");
+		List<Student> foundStudents = studentRepository.findByLastName(student1.getLastName());
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByFirstNameAndLastNameShouldWork() {
-		List<Student> foundStudents = studentRepository.findByFirstNameAndLastName("Mythri", "Arjun");
+		List<Student> foundStudents = studentRepository.findByFirstNameAndLastName(student1.getFirstName(),
+																					student1.getLastName());
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test
@@ -98,21 +100,21 @@ public class StudentTests {
 		List<Student> foundStudents = studentRepository.findByFirstNameAndLastNameAllIgnoreCase("mythrI", "aRjun");
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByPhoneNumberShouldWork() {
-		List<Student> foundStudents = studentRepository.findByPhoneNumber("9876543210");
+		List<Student> foundStudents = studentRepository.findByPhoneNumber(student1.getPhoneNumber());
 		assertThat(foundStudents.size()).isEqualTo(1);
 		
-		Student foundStudent = foundStudents.get(0);
-		assertThat(foundStudent.getFirstName()).isEqualTo("Mythri");
-		assertThat(foundStudent.getLastName()).isEqualTo("Arjun");
-		assertThat(foundStudent.getPhoneNumber()).isEqualTo("9876543210");
+		Student foundStudent1 = foundStudents.get(0);
+		assertThat(foundStudent1.getFirstName()).isEqualTo(student1.getFirstName());
+		assertThat(foundStudent1.getLastName()).isEqualTo(student1.getLastName());
+		assertThat(foundStudent1.getPhoneNumber()).isEqualTo(student1.getPhoneNumber());
 	}
 	
 	@Test

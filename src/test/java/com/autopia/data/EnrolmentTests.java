@@ -33,6 +33,7 @@ public class EnrolmentTests {
 	private Teacher teacher1;
 	private Skill skill1, skill2;
 	private Student student1;
+	private Enrolment enrolment1;
 	
 	@Before
 	public void setup() {
@@ -56,7 +57,7 @@ public class EnrolmentTests {
 		student1.setPhoneNumber("1234567890");
 		entityManager.persist(student1);
 		
-		Enrolment enrolment1 = new Enrolment();
+		enrolment1 = new Enrolment();
 		enrolment1.setTeacher(teacher1);
 		enrolment1.setSkill(skill1);
 		enrolment1.setStudent(student1);
@@ -74,14 +75,14 @@ public class EnrolmentTests {
 		enrolment2.setStudent(student1);
 		enrolment2.setSessionFee(20);
 		
-		Enrolment foundEnrolment2 = enrolmentRepository.save(enrolment2);
+		Enrolment savedEnrolment2 = enrolmentRepository.save(enrolment2);
 		
-		assertThat(foundEnrolment2.getSkill()).isEqualTo(skill2);
-		assertThat(foundEnrolment2.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment2.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment2.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment2.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment2.getBalanceDue()).isEqualTo(0);
+		assertThat(savedEnrolment2.getSkill()).isEqualTo(skill2);
+		assertThat(savedEnrolment2.getTeacher()).isEqualTo(teacher1);
+		assertThat(savedEnrolment2.getStudent()).isEqualTo(student1);
+		assertThat(savedEnrolment2.getSessionFee()).isEqualTo(20);
+		assertThat(savedEnrolment2.getIsActive()).isEqualTo(true);
+		assertThat(savedEnrolment2.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test
@@ -89,13 +90,13 @@ public class EnrolmentTests {
 		List<Enrolment> foundEnrolments = enrolmentRepository.findBySkill(skill1);
 		assertThat(foundEnrolments.size()).isEqualTo(1);
 		
-		Enrolment foundEnrolment = foundEnrolments.get(0);
-		assertThat(foundEnrolment.getSkill()).isEqualTo(skill1);
-		assertThat(foundEnrolment.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment.getBalanceDue()).isEqualTo(0);
+		Enrolment foundEnrolment1 = foundEnrolments.get(0);
+		assertThat(foundEnrolment1.getSkill()).isEqualTo(enrolment1.getSkill());
+		assertThat(foundEnrolment1.getTeacher()).isEqualTo(enrolment1.getTeacher());
+		assertThat(foundEnrolment1.getStudent()).isEqualTo(enrolment1.getStudent());
+		assertThat(foundEnrolment1.getSessionFee()).isEqualTo(enrolment1.getSessionFee());
+		assertThat(foundEnrolment1.getIsActive()).isEqualTo(true);
+		assertThat(foundEnrolment1.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test
@@ -103,13 +104,13 @@ public class EnrolmentTests {
 		List<Enrolment> foundEnrolments = enrolmentRepository.findBySkillName(skill1.getName());
 		assertThat(foundEnrolments.size()).isEqualTo(1);
 		
-		Enrolment foundEnrolment = foundEnrolments.get(0);
-		assertThat(foundEnrolment.getSkill()).isEqualTo(skill1);
-		assertThat(foundEnrolment.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment.getBalanceDue()).isEqualTo(0);
+		Enrolment foundEnrolment1 = foundEnrolments.get(0);
+		assertThat(foundEnrolment1.getSkill()).isEqualTo(enrolment1.getSkill());
+		assertThat(foundEnrolment1.getTeacher()).isEqualTo(enrolment1.getTeacher());
+		assertThat(foundEnrolment1.getStudent()).isEqualTo(enrolment1.getStudent());
+		assertThat(foundEnrolment1.getSessionFee()).isEqualTo(enrolment1.getSessionFee());
+		assertThat(foundEnrolment1.getIsActive()).isEqualTo(true);
+		assertThat(foundEnrolment1.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test
@@ -117,13 +118,13 @@ public class EnrolmentTests {
 		List<Enrolment> foundEnrolments = enrolmentRepository.findByTeacher(teacher1);
 		assertThat(foundEnrolments.size()).isEqualTo(1);
 		
-		Enrolment foundEnrolment = foundEnrolments.get(0);
-		assertThat(foundEnrolment.getSkill()).isEqualTo(skill1);
-		assertThat(foundEnrolment.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment.getBalanceDue()).isEqualTo(0);
+		Enrolment foundEnrolment1 = foundEnrolments.get(0);
+		assertThat(foundEnrolment1.getSkill()).isEqualTo(enrolment1.getSkill());
+		assertThat(foundEnrolment1.getTeacher()).isEqualTo(enrolment1.getTeacher());
+		assertThat(foundEnrolment1.getStudent()).isEqualTo(enrolment1.getStudent());
+		assertThat(foundEnrolment1.getSessionFee()).isEqualTo(enrolment1.getSessionFee());
+		assertThat(foundEnrolment1.getIsActive()).isEqualTo(true);
+		assertThat(foundEnrolment1.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test
@@ -131,13 +132,13 @@ public class EnrolmentTests {
 		List<Enrolment> foundEnrolments = enrolmentRepository.findByStudent(student1);
 		assertThat(foundEnrolments.size()).isEqualTo(1);
 		
-		Enrolment foundEnrolment = foundEnrolments.get(0);
-		assertThat(foundEnrolment.getSkill()).isEqualTo(skill1);
-		assertThat(foundEnrolment.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment.getBalanceDue()).isEqualTo(0);
+		Enrolment foundEnrolment1 = foundEnrolments.get(0);
+		assertThat(foundEnrolment1.getSkill()).isEqualTo(enrolment1.getSkill());
+		assertThat(foundEnrolment1.getTeacher()).isEqualTo(enrolment1.getTeacher());
+		assertThat(foundEnrolment1.getStudent()).isEqualTo(enrolment1.getStudent());
+		assertThat(foundEnrolment1.getSessionFee()).isEqualTo(enrolment1.getSessionFee());
+		assertThat(foundEnrolment1.getIsActive()).isEqualTo(true);
+		assertThat(foundEnrolment1.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test
@@ -145,13 +146,13 @@ public class EnrolmentTests {
 		List<Enrolment> foundEnrolments = enrolmentRepository.findByIsActive(true);
 		assertThat(foundEnrolments.size()).isEqualTo(1);
 		
-		Enrolment foundEnrolment = foundEnrolments.get(0);
-		assertThat(foundEnrolment.getSkill()).isEqualTo(skill1);
-		assertThat(foundEnrolment.getTeacher()).isEqualTo(teacher1);
-		assertThat(foundEnrolment.getStudent()).isEqualTo(student1);
-		assertThat(foundEnrolment.getSessionFee()).isEqualTo(20);
-		assertThat(foundEnrolment.getIsActive()).isEqualTo(true);
-		assertThat(foundEnrolment.getBalanceDue()).isEqualTo(0);
+		Enrolment foundEnrolment1 = foundEnrolments.get(0);
+		assertThat(foundEnrolment1.getSkill()).isEqualTo(enrolment1.getSkill());
+		assertThat(foundEnrolment1.getTeacher()).isEqualTo(enrolment1.getTeacher());
+		assertThat(foundEnrolment1.getStudent()).isEqualTo(enrolment1.getStudent());
+		assertThat(foundEnrolment1.getSessionFee()).isEqualTo(enrolment1.getSessionFee());
+		assertThat(foundEnrolment1.getIsActive()).isEqualTo(true);
+		assertThat(foundEnrolment1.getBalanceDue()).isEqualTo(0);
 	}
 	
 	@Test

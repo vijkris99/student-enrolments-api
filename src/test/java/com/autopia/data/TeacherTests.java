@@ -28,14 +28,15 @@ public class TeacherTests {
 	@Autowired
 	private TeacherRepository teacherRepository;
 	
+	private Teacher teacher1;
 	
 	@Before
 	public void setup() {
-		Teacher teacher = new Teacher();
-		teacher.setFirstName("Vijay");
-		teacher.setLastName("Ramaswamy");
-		teacher.setPhoneNumber("9876543210");
-		entityManager.persist(teacher);
+		teacher1 = new Teacher();
+		teacher1.setFirstName("Vijay");
+		teacher1.setLastName("Ramaswamy");
+		teacher1.setPhoneNumber("9876543210");
+		entityManager.persist(teacher1);
 	}
 	
 	@Test
@@ -46,10 +47,10 @@ public class TeacherTests {
 	
 	@Test
 	public void insertNewTeacherShouldSucceed() {
-		Teacher teacher = new Teacher();
-		teacher.setFirstName("Madhav");
-		teacher.setLastName("Bhatki");
-		Teacher foundTeacher = teacherRepository.save(teacher);
+		Teacher teacher2 = new Teacher();
+		teacher2.setFirstName("Madhav");
+		teacher2.setLastName("Bhatki");
+		Teacher foundTeacher = teacherRepository.save(teacher2);
 		
 		assertThat(foundTeacher.getFirstName()).isEqualTo("Madhav");
 		assertThat(foundTeacher.getLastName()).isEqualTo("Bhatki");
@@ -57,46 +58,47 @@ public class TeacherTests {
 	
 	@Test
 	public void findByFirstNameShouldWork() {
-		List<Teacher> foundTeachers = teacherRepository.findByFirstName("Vijay");
+		List<Teacher> foundTeachers = teacherRepository.findByFirstName(teacher1.getFirstName());
 		assertThat(foundTeachers.size()).isEqualTo(1);
 		
-		Teacher foundTeacher = foundTeachers.get(0);
-		assertThat(foundTeacher.getFirstName()).isEqualTo("Vijay");
-		assertThat(foundTeacher.getLastName()).isEqualTo("Ramaswamy");
-		assertThat(foundTeacher.getPhoneNumber()).isEqualTo("9876543210");
+		Teacher foundTeacher1 = foundTeachers.get(0);
+		assertThat(foundTeacher1.getFirstName()).isEqualTo(teacher1.getFirstName());
+		assertThat(foundTeacher1.getLastName()).isEqualTo(teacher1.getLastName());
+		assertThat(foundTeacher1.getPhoneNumber()).isEqualTo(teacher1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByLastNameShouldWork() {
-		List<Teacher> foundTeachers = teacherRepository.findByLastName("Ramaswamy");
+		List<Teacher> foundTeachers = teacherRepository.findByLastName(teacher1.getLastName());
 		assertThat(foundTeachers.size()).isEqualTo(1);
 		
-		Teacher foundTeacher = foundTeachers.get(0);
-		assertThat(foundTeacher.getFirstName()).isEqualTo("Vijay");
-		assertThat(foundTeacher.getLastName()).isEqualTo("Ramaswamy");
-		assertThat(foundTeacher.getPhoneNumber()).isEqualTo("9876543210");
+		Teacher foundTeacher1 = foundTeachers.get(0);
+		assertThat(foundTeacher1.getFirstName()).isEqualTo(teacher1.getFirstName());
+		assertThat(foundTeacher1.getLastName()).isEqualTo(teacher1.getLastName());
+		assertThat(foundTeacher1.getPhoneNumber()).isEqualTo(teacher1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByFirstNameAndLastNameShouldWork() {
-		List<Teacher> foundTeachers = teacherRepository.findByFirstNameAndLastName("Vijay", "Ramaswamy");
+		List<Teacher> foundTeachers = teacherRepository.findByFirstNameAndLastName(teacher1.getFirstName(),
+																					teacher1.getLastName());
 		assertThat(foundTeachers.size()).isEqualTo(1);
 		
-		Teacher foundTeacher = foundTeachers.get(0);
-		assertThat(foundTeacher.getFirstName()).isEqualTo("Vijay");
-		assertThat(foundTeacher.getLastName()).isEqualTo("Ramaswamy");
-		assertThat(foundTeacher.getPhoneNumber()).isEqualTo("9876543210");
+		Teacher foundTeacher1 = foundTeachers.get(0);
+		assertThat(foundTeacher1.getFirstName()).isEqualTo(teacher1.getFirstName());
+		assertThat(foundTeacher1.getLastName()).isEqualTo(teacher1.getLastName());
+		assertThat(foundTeacher1.getPhoneNumber()).isEqualTo(teacher1.getPhoneNumber());
 	}
 	
 	@Test
 	public void findByPhoneNumberShouldWork() {
-		List<Teacher> foundTeachers = teacherRepository.findByPhoneNumber("9876543210");
+		List<Teacher> foundTeachers = teacherRepository.findByPhoneNumber(teacher1.getPhoneNumber());
 		assertThat(foundTeachers.size()).isEqualTo(1);
 		
-		Teacher foundTeacher = foundTeachers.get(0);
-		assertThat(foundTeacher.getFirstName()).isEqualTo("Vijay");
-		assertThat(foundTeacher.getLastName()).isEqualTo("Ramaswamy");
-		assertThat(foundTeacher.getPhoneNumber()).isEqualTo("9876543210");
+		Teacher foundTeacher1 = foundTeachers.get(0);
+		assertThat(foundTeacher1.getFirstName()).isEqualTo(teacher1.getFirstName());
+		assertThat(foundTeacher1.getLastName()).isEqualTo(teacher1.getLastName());
+		assertThat(foundTeacher1.getPhoneNumber()).isEqualTo(teacher1.getPhoneNumber());
 	}
 	
 	@Test
@@ -107,7 +109,7 @@ public class TeacherTests {
 	
 	@Test
 	public void deleteTeacherShouldSucceed() {
-		teacherRepository.delete(teacherRepository.findByFirstName("Vijay"));
+		teacherRepository.delete(teacherRepository.findByFirstName(teacher1.getFirstName()));
 		
 		List<Teacher> foundTeachers = (List<Teacher>) teacherRepository.findAll();
 		assertThat(foundTeachers.size()).isEqualTo(0);

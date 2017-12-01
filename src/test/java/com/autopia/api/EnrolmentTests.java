@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.autopia.data.entities.Enrolment;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,6 +29,7 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 public class EnrolmentTests extends BaseTest {
 	
 	@SneakyThrows
@@ -52,7 +54,7 @@ public class EnrolmentTests extends BaseTest {
 		// Then I should succeed
 		// And the enrolment should contain links to the corresponding teacher, skill and student
 		mockMvc
-			.perform(get("/enrolments/{id}", 1))
+			.perform(get("/enrolments/{id}", savedEnrolment1.getId()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._links.teacher.href").exists())
@@ -66,9 +68,9 @@ public class EnrolmentTests extends BaseTest {
 		// Given a teacher, skill and student
 		ObjectNode enrolmentJson = objectMapper.createObjectNode();
 		
-		enrolmentJson.put("teacher", "/teachers/2");
-		enrolmentJson.put("skill", "/skills/2");
-		enrolmentJson.put("student", "/students/2");
+		enrolmentJson.put("teacher", "/teachers/" + savedTeacher2.getId());
+		enrolmentJson.put("skill", "/skills/" + savedSkill2.getId());
+		enrolmentJson.put("student", "/students/" + savedStudent2.getId());
 		enrolmentJson.put("sessionFee", 20);
 		//enrolmentJson.put("startDate", LocalDate.now().toString());
 		
@@ -97,21 +99,21 @@ public class EnrolmentTests extends BaseTest {
 				.perform(get("/enrolments/{id}/skill", createdEnrolmentId))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.name", is(skill2.getName())));
+				.andExpect(jsonPath("$.name", is(savedSkill2.getName())));
 			
 			// And the enrolment should be associated with the teacher
 			mockMvc
 				.perform(get("/enrolments/{id}/teacher", createdEnrolmentId))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.firstName", is(teacher2.getFirstName())));
+				.andExpect(jsonPath("$.firstName", is(savedTeacher2.getFirstName())));
 			
 			// And the enrolment should be associated with the student
 			mockMvc
 				.perform(get("/enrolments/{id}/student", createdEnrolmentId))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.firstName", is(student2.getFirstName())));
+				.andExpect(jsonPath("$.firstName", is(savedStudent2.getFirstName())));
 		} catch(Exception ex) {
 			log.error("Error creating a new enrolment", ex);
 		} finally {
@@ -125,11 +127,11 @@ public class EnrolmentTests extends BaseTest {
 	public void findBySkillShouldWork() {
 		mockMvc
 			.perform(get("/enrolments/search/findBySkill")
-					.param("skill", "/skills/1"))
+					.param("skill", "/skills/" + savedSkill1.getId()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-											containsString("/enrolments/1")));
+										containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -141,7 +143,7 @@ public class EnrolmentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-											containsString("/enrolments/1")));
+										containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -149,11 +151,11 @@ public class EnrolmentTests extends BaseTest {
 	public void findByTeacherShouldWork() {
 		mockMvc
 		.perform(get("/enrolments/search/findByTeacher")
-				.param("teacher", "/teachers/1"))
+				.param("teacher", "/teachers/" + savedTeacher1.getId()))
 		.andDo(print())
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-										containsString("/enrolments/1")));
+									containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -161,11 +163,11 @@ public class EnrolmentTests extends BaseTest {
 	public void findByStudentShouldWork() {
 		mockMvc
 		.perform(get("/enrolments/search/findByStudent")
-				.param("student", "/students/1"))
+				.param("student", "/students/" + savedStudent1.getId()))
 		.andDo(print())
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-										containsString("/enrolments/1")));
+									containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -173,18 +175,18 @@ public class EnrolmentTests extends BaseTest {
 	public void replaceEnrolmentShouldSucceed() {
 		// Given an existing enrolment
 		Enrolment enrolment = new Enrolment();
-		enrolment.setTeacher(teacher2);
-		enrolment.setSkill(skill2);
-		enrolment.setStudent(student2);
+		enrolment.setTeacher(savedTeacher2);
+		enrolment.setSkill(savedSkill2);
+		enrolment.setStudent(savedStudent2);
 		enrolment.setSessionFee(20);
 		Enrolment savedEnrolment = enrolmentRepository.save(enrolment);
 		
 		// When I replace the existing entry for the enrolment
 		// Then it should succeed
 		ObjectNode enrolmentJson = objectMapper.createObjectNode();
-		enrolmentJson.put("teacher", "/teachers/2");
-		enrolmentJson.put("skill", "/skills/2");
-		enrolmentJson.put("student", "/students/2");
+		enrolmentJson.put("teacher", "/teachers/" + savedTeacher2.getId());
+		enrolmentJson.put("skill", "/skills/" + savedSkill2.getId());
+		enrolmentJson.put("student", "/students/" + savedStudent2.getId());
 		enrolmentJson.put("sessionFee", 25);
 		
 		try {
@@ -211,9 +213,9 @@ public class EnrolmentTests extends BaseTest {
 	public void updateEnrolmentShouldSucceed() {
 		// Given an existing enrolment
 		Enrolment enrolment = new Enrolment();
-		enrolment.setTeacher(teacher2);
-		enrolment.setSkill(skill2);
-		enrolment.setStudent(student2);
+		enrolment.setTeacher(savedTeacher2);
+		enrolment.setSkill(savedSkill2);
+		enrolment.setStudent(savedStudent2);
 		enrolment.setSessionFee(20);
 		Enrolment savedEnrolment = enrolmentRepository.save(enrolment);
 		
@@ -246,9 +248,9 @@ public class EnrolmentTests extends BaseTest {
 	public void deleteEnrolmentShouldSucceed() {
 		// Given an existing enrolment
 		Enrolment enrolment = new Enrolment();
-		enrolment.setTeacher(teacher2);
-		enrolment.setSkill(skill2);
-		enrolment.setStudent(student2);
+		enrolment.setTeacher(savedTeacher2);
+		enrolment.setSkill(savedSkill2);
+		enrolment.setStudent(savedStudent2);
 		enrolment.setSessionFee(20);
 		Enrolment savedEnrolment = enrolmentRepository.save(enrolment);
 		
@@ -259,7 +261,7 @@ public class EnrolmentTests extends BaseTest {
 			.andExpect(status().isNoContent());
 		
 		// And the enrolment should no longer be found in the system
-		List<Enrolment> foundEnrolments = enrolmentRepository.findByTeacher(teacher2);
+		List<Enrolment> foundEnrolments = enrolmentRepository.findByTeacher(savedTeacher2);
 		assertThat(foundEnrolments.size(), is(0));
 	}
 }

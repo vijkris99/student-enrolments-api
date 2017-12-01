@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.autopia.data.entities.Student;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 public class StudentTests extends BaseTest {
 	
 	@SneakyThrows
@@ -46,7 +48,7 @@ public class StudentTests extends BaseTest {
 		
 		// When I read the student
 		// Then I should succeed
-		MvcResult mvcResult = mockMvc.perform(get("/students/{id}", 1))
+		MvcResult mvcResult = mockMvc.perform(get("/students/{id}", savedStudent1.getId()))
 										.andDo(print())
 										//.andExpect(status().isOk())
 										.andExpect(jsonPath("$.firstName").value("Pranav"))
@@ -94,7 +96,7 @@ public class StudentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
-											containsString("/students/1")));
+											containsString("/students/" + savedStudent1.getId())));
 	}
 	
 	@SneakyThrows
@@ -106,7 +108,7 @@ public class StudentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
-											containsString("/students/1")));
+											containsString("/students/" + savedStudent1.getId())));
 	}
 	
 	@Test

@@ -1,9 +1,12 @@
 package com.autopia.data.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,11 +39,23 @@ public class Teacher {
 	
 	private String phoneNumber;
 	
-	@ManyToMany
+	@ManyToMany(
+		cascade= {CascadeType.MERGE, CascadeType.PERSIST},
+		fetch=FetchType.LAZY
+	)
 	@JoinTable(
 		name="Teacher_Skills",
 		joinColumns=@JoinColumn(name="teacher_id", referencedColumnName="id"),
 		inverseJoinColumns=@JoinColumn(name="skill_id", referencedColumnName="id")
 	)
-	private Set<Skill> skills;
+	@Setter(value=AccessLevel.NONE)
+	private Set<Skill> skills = new HashSet<>();
+	
+	public void addSkill(Skill skill) {
+		this.skills.add(skill);
+	}
+	
+	public void removeSkill(Skill skill) {
+		this.skills.remove(skill);
+	}
 }

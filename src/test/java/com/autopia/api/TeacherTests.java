@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.autopia.data.entities.Teacher;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 public class TeacherTests extends BaseTest {
 	
 	@SneakyThrows
@@ -45,7 +47,7 @@ public class TeacherTests extends BaseTest {
 		// When I read the teacher
 		// Then I should succeed
 		// And the teacher details should be accurate
-		mockMvc.perform(get("/teachers/{id}", 1))
+		mockMvc.perform(get("/teachers/{id}", savedTeacher1.getId()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.firstName").value("Vijay"))
