@@ -1,5 +1,6 @@
 package com.autopia.api;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.hamcrest.Matchers.*;
@@ -124,14 +123,14 @@ public class EnrolmentTests extends BaseTest {
 	
 	@SneakyThrows
 	@Test
-	public void findBySkillShouldWork() {
+	public void findBySkillIdShouldWork() {
 		mockMvc
-			.perform(get("/enrolments/search/findBySkill")
-					.param("skill", "/skills/" + savedSkill1.getId()))
+			.perform(get("/enrolments/search/findBySkillId")
+					.param("skillId", savedSkill1.getId().toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-										containsString("/enrolments/" + savedEnrolment1.getId())));
+									containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -143,31 +142,67 @@ public class EnrolmentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-										containsString("/enrolments/" + savedEnrolment1.getId())));
-	}
-	
-	@SneakyThrows
-	@Test
-	public void findByTeacherShouldWork() {
-		mockMvc
-		.perform(get("/enrolments/search/findByTeacher")
-				.param("teacher", "/teachers/" + savedTeacher1.getId()))
-		.andDo(print())
-		.andExpect(status().isOk())
-		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
 									containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
 	@Test
-	public void findByStudentShouldWork() {
+	public void findByTeacherIdShouldWork() {
 		mockMvc
-		.perform(get("/enrolments/search/findByStudent")
-				.param("student", "/students/" + savedStudent1.getId()))
+			.perform(get("/enrolments/search/findByTeacherId")
+					.param("teacherId", savedTeacher1.getId().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+									containsString("/enrolments/" + savedEnrolment1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByTeacherFirstNameShouldWork() {
+		mockMvc
+			.perform(get("/enrolments/search/findByTeacherFirstName")
+					.param("teacherFirstName", savedTeacher1.getFirstName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+									containsString("/enrolments/" + savedEnrolment1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByStudentIdShouldWork() {
+		mockMvc
+			.perform(get("/enrolments/search/findByStudentId")
+					.param("studentId", savedStudent1.getId().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+									containsString("/enrolments/" + savedEnrolment1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByStudentFirstNameShouldWork() {
+		mockMvc
+			.perform(get("/enrolments/search/findByStudentFirstName")
+					.param("studentFirstName", savedStudent1.getFirstName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
+									containsString("/enrolments/" + savedEnrolment1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByIsActiveShouldWork() {
+		mockMvc
+		.perform(get("/enrolments/search/findByIsActive")
+				.param("isActive", savedEnrolment1.getIsActive().toString()))
 		.andDo(print())
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$._embedded.enrolments[0]_links.self.href",
-									containsString("/enrolments/" + savedEnrolment1.getId())));
+								containsString("/enrolments/" + savedEnrolment1.getId())));
 	}
 	
 	@SneakyThrows
@@ -257,11 +292,11 @@ public class EnrolmentTests extends BaseTest {
 		// When I delete the enrolment
 		// Then it should succeed
 		mockMvc.perform(delete("/enrolments/{id}", savedEnrolment.getId()))
-			.andDo(print())
-			.andExpect(status().isNoContent());
+				.andDo(print())
+				.andExpect(status().isNoContent());
 		
 		// And the enrolment should no longer be found in the system
-		List<Enrolment> foundEnrolments = enrolmentRepository.findByTeacher(savedTeacher2);
-		assertThat(foundEnrolments.size(), is(0));
+		Enrolment foundEnrolment = enrolmentRepository.findOne(savedEnrolment.getId());
+		assertThat(foundEnrolment, Matchers.nullValue());
 	}
 }

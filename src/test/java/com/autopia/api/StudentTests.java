@@ -16,9 +16,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.hamcrest.Matchers;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @RunWith(SpringRunner.class)
@@ -51,7 +55,7 @@ public class StudentTests extends BaseTest {
 		MvcResult mvcResult = mockMvc.perform(get("/students/{id}", savedStudent1.getId()))
 										.andDo(print())
 										//.andExpect(status().isOk())
-										.andExpect(jsonPath("$.firstName").value("Pranav"))
+										.andExpect(jsonPath("$.firstName").value(savedStudent1.getFirstName()))
 										.andReturn();
 		
 		// And the student details should be accurate
@@ -92,7 +96,7 @@ public class StudentTests extends BaseTest {
 	public void findByFirstNameShouldWork() {
 		mockMvc
 			.perform(get("/students/search/findByFirstName")
-					.param("firstName", "Pranav"))
+					.param("firstName", savedStudent1.getFirstName()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
@@ -105,6 +109,56 @@ public class StudentTests extends BaseTest {
 		mockMvc
 			.perform(get("/students/search/findByFirstNameIgnoreCase")
 					.param("firstName", "praNav"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/" + savedStudent1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByLastNameShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByLastName")
+					.param("lastName", savedStudent1.getLastName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/" + savedStudent1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameAndLastNameShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByFirstNameAndLastName")
+					.param("firstName", savedStudent1.getFirstName())
+					.param("lastName", savedStudent1.getLastName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/" + savedStudent1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameAndLastNameAllIgnoreCaseShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByFirstNameAndLastNameAllIgnoreCase")
+					.param("firstName", "praNav")
+					.param("lastName", "kishORe"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
+											containsString("/students/" + savedStudent1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByPhoneNumberShouldWork() {
+		mockMvc
+			.perform(get("/students/search/findByPhoneNumber")
+					.param("phoneNumber", savedStudent1.getPhoneNumber()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.students[0]_links.self.href",
@@ -189,6 +243,8 @@ public class StudentTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isNoContent());
 		
-		// TODO: Search and make sure the student got deleted
+		// And the student should no longer be found
+		Student foundStudent = studentRepository.findOne(savedStudent.getId());
+		assertThat(foundStudent, Matchers.nullValue());
 	}
 }

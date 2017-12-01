@@ -17,8 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.hamcrest.Matchers;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -51,7 +55,7 @@ public class SkillTests extends BaseTest {
 		mockMvc.perform(get("/skills/{id}", savedSkill1.getId()))
 						.andDo(print())
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.name").value("Keyboard"));
+						.andExpect(jsonPath("$.name").value(savedSkill1.getName()));
 	}
 	
 	@SneakyThrows
@@ -82,6 +86,18 @@ public class SkillTests extends BaseTest {
 									createdSkillLocation.replace("http://localhost/skills/", ""));
 			skillRepository.delete(createdSkillId);
 		}
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByNameShouldWork() {
+		mockMvc
+			.perform(get("/skills/search/findByName")
+					.param("name", savedSkill1.getName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.skills[0]_links.self.href",
+											containsString("/skills/" + savedSkill1.getId())));
 	}
 	
 	@SneakyThrows
@@ -158,6 +174,8 @@ public class SkillTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isNoContent());
 		
-		// TODO: Search and make sure the skill got deleted
+		// And the skill should no longer be found
+		Skill foundSkill = skillRepository.findOne(savedSkill.getId());
+		assertThat(foundSkill, Matchers.nullValue());
 	}
 }

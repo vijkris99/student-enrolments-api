@@ -78,10 +78,12 @@ public abstract class BaseTest {
 		
 		Student student1 = new Student();
 		student1.setFirstName("Pranav");
+		student1.setLastName("Kishore");
 		savedStudent1 = studentRepository.save(student1);
 		
 		Student student2 = new Student();
 		student2.setFirstName("Arwin");
+		student2.setLastName("Balaji");
 		savedStudent2 = studentRepository.save(student2);
 		
 		Enrolment enrolment1 = new Enrolment();

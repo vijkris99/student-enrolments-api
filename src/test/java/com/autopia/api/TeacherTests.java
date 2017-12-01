@@ -15,8 +15,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.hamcrest.Matchers;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @RunWith(SpringRunner.class)
@@ -87,6 +92,80 @@ public class TeacherTests extends BaseTest {
 									createdTeacherLocation.replace("http://localhost/teachers/", ""));
 			teacherRepository.delete(createdTeacherId);
 		}
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByFirstName")
+					.param("firstName", savedTeacher1.getFirstName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameIgnoreCaseShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByFirstNameIgnoreCase")
+					.param("firstName", "viJAy"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByLastNameShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByLastName")
+					.param("lastName", savedTeacher1.getLastName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameAndLastNameShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByFirstNameAndLastName")
+					.param("firstName", savedTeacher1.getFirstName())
+					.param("lastName", savedTeacher1.getLastName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByFirstNameAndLastNameAllIgnoreCaseShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByFirstNameAndLastNameAllIgnoreCase")
+					.param("firstName", "viJaY")
+					.param("lastName", "raMaswAMy"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByPhoneNumberShouldWork() {
+		mockMvc
+			.perform(get("/teachers/search/findByPhoneNumber")
+					.param("phoneNumber", savedTeacher1.getPhoneNumber()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+											containsString("/teachers/" + savedTeacher1.getId())));
 	}
 	
 	@Test
@@ -173,5 +252,9 @@ public class TeacherTests extends BaseTest {
 		mockMvc.perform(delete("/teachers/{id}", savedTeacher.getId()))
 			.andDo(print())
 			.andExpect(status().isNoContent());
+		
+		// And the teacher should no longer be found
+		Teacher foundTeacher = teacherRepository.findOne(savedTeacher.getId());
+		assertThat(foundTeacher, Matchers.nullValue());
 	}
 }

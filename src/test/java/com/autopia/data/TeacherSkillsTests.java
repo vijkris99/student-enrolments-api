@@ -76,24 +76,24 @@ public class TeacherSkillsTests {
 		assertThat(savedTeacher2.getSkills()).contains(skill1, skill2);
 		
 		// And the teacher should be searchable by the first skill
-		Set<Teacher> foundTeachersBySkill1 = teacherRepository.findBySkills(skill1);
+		Set<Teacher> foundTeachersBySkill1 = teacherRepository.findBySkillsId(skill1.getId());
 		assertThat(foundTeachersBySkill1.size()).isEqualTo(1);
 		Teacher foundTeacher2BySkill1 = foundTeachersBySkill1.iterator().next();
 		assertThat(foundTeacher2BySkill1.getSkills().size()).isEqualTo(2);
 		assertThat(foundTeacher2BySkill1.getSkills()).contains(skill1, skill2);
 		
 		// And the teacher should be searchable by the second skill
-		Set<Teacher> foundTeachersBySkill2 = teacherRepository.findBySkills(skill2);
+		Set<Teacher> foundTeachersBySkill2 = teacherRepository.findBySkillsId(skill2.getId());
 		assertThat(foundTeachersBySkill2.size()).isEqualTo(1);
 		Teacher foundTeacher2BySkill2 = foundTeachersBySkill2.iterator().next();
 		assertThat(foundTeacher2BySkill2.getSkills().size()).isEqualTo(2);
 		assertThat(foundTeacher2BySkill2.getSkills()).contains(skill1, skill2);
 		
 		// And the teacher should be searchable by both skills together
-		Set<Skill> skills = new HashSet<>();
-		skills.add(skill1);
-		skills.add(skill2);
-		Set<Teacher> foundTeachersByBothSkills = teacherRepository.findBySkillsIn(skills);
+		Set<Long> skillIds = new HashSet<>();
+		skillIds.add(skill1.getId());
+		skillIds.add(skill2.getId());
+		Set<Teacher> foundTeachersByBothSkills = teacherRepository.findBySkillsIdIn(skillIds);
 		assertThat(foundTeachersByBothSkills.size()).isEqualTo(1);
 		Teacher foundTeacher2ByBothSkills = foundTeachersByBothSkills.iterator().next();
 		assertThat(foundTeacher2ByBothSkills.getSkills().size()).isEqualTo(2);
@@ -124,11 +124,55 @@ public class TeacherSkillsTests {
 		assertThat(savedTeacher2.getSkills()).contains(skill2);
 		
 		// And both teachers should be searchable by the skill
-		Set<Teacher> foundTeachersBySkill2 = teacherRepository.findBySkills(skill2);
+		Set<Teacher> foundTeachersBySkill2 = teacherRepository.findBySkillsId(skill2.getId());
 		assertThat(foundTeachersBySkill2.size()).isEqualTo(2);
 		for (Teacher foundTeacherBySkill2 : foundTeachersBySkill2) {
 			assertThat(foundTeacherBySkill2.getSkills()).contains(skill2);
 		}
+	}
+	
+	@Test
+	public void findBySkillsNameShouldWork() {
+		// Given a teacher and a skill
+		Teacher teacher1 = teacherRepository.findByFirstName("Vijay").iterator().next();
+		Skill skill1 = skillRepository.findByName("Keyboard").get(0);
+		
+		// When I associate the skill with the teacher
+		teacher1.addSkill(skill1);
+		Teacher savedTeacher1 = teacherRepository.save(teacher1);
+		
+		// Then the skill should be associated with the teacher
+		assertThat(savedTeacher1.getSkills().size()).isEqualTo(1);
+		assertThat(savedTeacher1.getSkills()).contains(skill1);
+		
+		// And the teacher should be searchable by the skill name
+		Set<Teacher> foundTeachersBySkill1Name = teacherRepository.findBySkillsName(skill1.getName());
+		assertThat(foundTeachersBySkill1Name.size()).isEqualTo(1);
+		Teacher foundTeacher1BySkill1 = foundTeachersBySkill1Name.iterator().next();
+		assertThat(foundTeacher1BySkill1.getSkills().size()).isEqualTo(1);
+		assertThat(foundTeacher1BySkill1.getSkills()).contains(skill1);
+	}
+	
+	@Test
+	public void findBySkillsIdShouldWork() {
+		// Given a teacher and a skill
+		Teacher teacher1 = teacherRepository.findByFirstName("Vijay").iterator().next();
+		Skill skill1 = skillRepository.findByName("Keyboard").get(0);
+		
+		// When I associate the skill with the teacher
+		teacher1.addSkill(skill1);
+		Teacher savedTeacher1 = teacherRepository.save(teacher1);
+		
+		// Then the skill should be associated with the teacher
+		assertThat(savedTeacher1.getSkills().size()).isEqualTo(1);
+		assertThat(savedTeacher1.getSkills()).contains(skill1);
+		
+		// And the teacher should be searchable by the skill name
+		Set<Teacher> foundTeachersBySkill1Id = teacherRepository.findBySkillsId(skill1.getId());
+		assertThat(foundTeachersBySkill1Id.size()).isEqualTo(1);
+		Teacher foundTeacher1BySkill1 = foundTeachersBySkill1Id.iterator().next();
+		assertThat(foundTeacher1BySkill1.getSkills().size()).isEqualTo(1);
+		assertThat(foundTeacher1BySkill1.getSkills()).contains(skill1);
 	}
 	
 	@Test

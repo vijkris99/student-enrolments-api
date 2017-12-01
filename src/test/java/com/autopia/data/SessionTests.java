@@ -121,7 +121,7 @@ public class SessionTests {
 	
 	@Test
 	public void findByEnrolmentShouldSucceed() {
-		List<Session> foundSessions = sessionRepository.findByEnrolment(enrolment1);
+		List<Session> foundSessions = sessionRepository.findByEnrolmentId(enrolment1.getId());
 		assertThat(foundSessions.size()).isEqualTo(1);
 		Session foundSession1 = foundSessions.get(0);
 		

@@ -36,7 +36,8 @@ public class TeacherSkillsTests extends BaseTest {
 			.perform(post("/teachers/{id}/skills", savedTeacher1.getId())
 					.contentType("text/uri-list")
 					.accept(MediaType.APPLICATION_JSON_UTF8)
-					.content("/skills/1\n/skills/2"))
+					.content("/skills/" + savedSkill1.getId() +
+								"\n/skills/" + savedSkill2.getId()))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 		
@@ -50,44 +51,36 @@ public class TeacherSkillsTests extends BaseTest {
 		
 		// And the teacher should be searchable by the first skill
 		mockMvc
-			.perform(get("/teachers/search/findBySkills")
-					.param("skill", "/skills/1"))
+			.perform(get("/teachers/search/findBySkillsId")
+					.param("skillId", savedSkill1.getId().toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
-											containsString("/teachers/1")));
+						containsString("/teachers/" + savedTeacher1.getId())));
 		
 		// And the teacher should be searchable by the second skill
 		mockMvc
-			.perform(get("/teachers/search/findBySkills")
-					.param("skill", "/skills/2"))
+			.perform(get("/teachers/search/findBySkillsId")
+					.param("skillId", savedSkill2.getId().toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
-											containsString("/teachers/1")));
+						containsString("/teachers/" + savedTeacher1.getId())));
 		
 		// And the teacher should be searchable by both skills together
 		mockMvc
-			.perform(get("/teachers/search/findBySkillsIn")
-					.param("skills", "/skills/1", "/skills/2"))
+			.perform(get("/teachers/search/findBySkillsIdIn")
+					.param("skillIds", savedSkill1.getId().toString(), savedSkill2.getId().toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
-											containsString("/teachers/1")));
+						containsString("/teachers/" + savedTeacher1.getId())));
 	}
 	
 	@Test
 	@SneakyThrows
 	public void shouldBeAbleToAssociateSkillWithMultipleTeachers() {
 		// Given a skill and 2 teachers
-		mockMvc.perform(get("/teachers"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._embedded").exists())
-				.andExpect(jsonPath("$._links.self").exists())
-				.andExpect(jsonPath("$._links.profile").exists())
-				.andExpect(jsonPath("$._embedded.teachers").isArray())
-				.andExpect(jsonPath("$._embedded.teachers.length()").value(2));
 		
 		// When I associate the skill with the first teacher
 		mockMvc
@@ -123,8 +116,8 @@ public class TeacherSkillsTests extends BaseTest {
 		
 		// And both teachers should be searchable by the skill
 		mockMvc
-			.perform(get("/teachers/search/findBySkills")
-					.param("skill", "/skills/" + savedSkill1.getId()))
+			.perform(get("/teachers/search/findBySkillsId")
+					.param("skillId", savedSkill1.getId().toString()))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._embedded.teachers.length()", is(2)))
@@ -132,6 +125,70 @@ public class TeacherSkillsTests extends BaseTest {
 						hasItems(savedTeacher1.getFirstName(), savedTeacher2.getFirstName())))
 			.andExpect(jsonPath("$._embedded.teachers[*].lastName",
 						hasItems(savedTeacher1.getLastName(), savedTeacher2.getLastName())));
+	}
+	
+	@Test
+	@SneakyThrows
+	public void findBySkillsNameShouldWork() {
+		// Given a skill and a teacher
+		
+		// When I associate the skill with the teacher
+		mockMvc
+			.perform(post("/teachers/{id}/skills", savedTeacher1.getId())
+					.contentType("text/uri-list")
+					.accept(MediaType.APPLICATION_JSON_UTF8)
+					.content("/skills/" + savedSkill1.getId()))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+		
+		// Then the skill should be associated with the teacher
+		mockMvc
+			.perform(get("/teachers/{id}/skills", savedTeacher1.getId()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.skills[0].name", is(savedSkill1.getName())));
+		
+		// And the teacher should be searchable by the skill name
+		mockMvc
+			.perform(get("/teachers/search/findBySkillsName")
+					.param("skillName", savedSkill1.getName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+						containsString("/teachers/" + savedTeacher1.getId())));
+	}
+	
+	@Test
+	@SneakyThrows
+	public void findBySkillsNameInShouldWork() {
+		// Given a teacher and 2 skills
+		
+		// When I associate both the skills with the teacher
+		mockMvc
+			.perform(post("/teachers/{id}/skills", savedTeacher1.getId())
+					.contentType("text/uri-list")
+					.accept(MediaType.APPLICATION_JSON_UTF8)
+					.content("/skills/" + savedSkill1.getId() +
+								"\n/skills/" + savedSkill2.getId()))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+		
+		// Then the teacher should be associated with both the skills
+		mockMvc
+			.perform(get("/teachers/{id}/skills", savedTeacher1.getId()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.skills[*].name",
+						hasItems(savedSkill1.getName(), savedSkill2.getName())));
+		
+		// And the teacher should be searchable by both skill names together
+		mockMvc
+			.perform(get("/teachers/search/findBySkillsNameIn")
+					.param("skillNames", savedSkill1.getName(), savedSkill2.getName()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.teachers[0]_links.self.href",
+						containsString("/teachers/" + savedTeacher1.getId())));
 	}
 	
 	@Test

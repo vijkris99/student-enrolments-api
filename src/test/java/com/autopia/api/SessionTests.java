@@ -1,5 +1,7 @@
 package com.autopia.api;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -10,6 +12,8 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -58,8 +62,8 @@ public class SessionTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$._links.enrolment.href").exists())
-			.andExpect(jsonPath("$.startTime").value("2017-11-22T12:00:00Z"))
-			.andExpect(jsonPath("$.endTime").value("2017-11-22T12:30:00Z"))
+			.andExpect(jsonPath("$.startTime").value("2017-11-22T12:00:00Z"))	// always return UTC
+			.andExpect(jsonPath("$.endTime").value("2017-11-22T12:30:00Z"))	// always return UTC
 			.andExpect(jsonPath("$.completed").value(false))
 			.andExpect(jsonPath("$.feePaid").value(0));
 	}
@@ -99,6 +103,57 @@ public class SessionTests extends BaseTest {
 									createdSessionLocation.replace("http://localhost/sessions/", ""));
 			sessionRepository.delete(createdSessionId);
 		}
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByEnrolmentIdShouldWork() {
+		mockMvc
+			.perform(get("/sessions/search/findByEnrolmentId")
+					.param("enrolmentId", savedSession1.getEnrolment().getId().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.sessions[0]_links.self.href",
+							containsString("/sessions/" + savedSession1.getId())));
+	}
+	
+	@Ignore
+	@SneakyThrows
+	@Test
+	public void findByStartTimeShouldWork() {
+		mockMvc
+			.perform(get("/sessions/search/findByStartTime")
+					.param("startTime", savedSession1.getStartTime().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.sessions[0]_links.self.href",
+							containsString("/sessions/" + savedSession1.getId())));
+	}
+	
+	@Ignore
+	@SneakyThrows
+	@Test
+	public void findByStartTimeAndEndTimeShouldWork() {
+		mockMvc
+			.perform(get("/sessions/search/findByStartTimeAndEndTime")
+					.param("startTime", savedSession1.getStartTime().toString())
+					.param("endTime", savedSession1.getEndTime().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.sessions[0]_links.self.href",
+							containsString("/sessions/" + savedSession1.getId())));
+	}
+	
+	@SneakyThrows
+	@Test
+	public void findByCompletedShouldWork() {
+		mockMvc
+			.perform(get("/sessions/search/findByCompleted")
+					.param("completed", savedSession1.getCompleted().toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$._embedded.sessions[0]_links.self.href",
+							containsString("/sessions/" + savedSession1.getId())));
 	}
 	
 	@SneakyThrows
@@ -212,6 +267,8 @@ public class SessionTests extends BaseTest {
 			.andDo(print())
 			.andExpect(status().isNoContent());
 		
-		// TODO: Search and make sure the session got deleted
+		// And the session should no longer be found
+		Session foundSession = sessionRepository.findOne(savedSession.getId());
+		assertThat(foundSession, Matchers.nullValue());
 	}
 }
