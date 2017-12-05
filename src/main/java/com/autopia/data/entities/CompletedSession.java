@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -20,13 +21,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(
-	name="Enrolments",
-	uniqueConstraints=@UniqueConstraint(columnNames={"teacher_id", "student_id", "skill_id"})
+	name="Sessions",
+	uniqueConstraints=@UniqueConstraint(columnNames={"startTime"})
 )
 @Entity
 @Data
 @NoArgsConstructor
-public class Enrolment {
+public class CompletedSession {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -34,34 +35,23 @@ public class Enrolment {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="teacher_id", nullable=false)
-	private Teacher teacher;
+	@JoinColumn(name="enrolment_id", nullable=false)
+	private Enrolment enrolment;
 	
-	@ManyToOne
-	@JoinColumn(name="student_id", nullable=false)
-	private Student student;
+	@JsonFormat(timezone="UTC")
+	@Column(nullable=false)
+	private ZonedDateTime startTime;
 	
-	@ManyToOne
-	@JoinColumn(name="skill_id", nullable=false)
-	private Skill skill;
+	@JsonFormat(timezone="UTC")
+	@Column(nullable=false)
+	private ZonedDateTime endTime;
 	
 	@Column(nullable=false)
-	private Integer sessionFee;
+	private Integer feePaid;
 	
-	private Integer balanceDue = 0;
-	private Boolean isActive = true;
-	
-	@JsonFormat(timezone="UTC")
-	private ZonedDateTime startDate = ZonedDateTime.now();
-	
-	@JsonFormat(timezone="UTC")
-	private ZonedDateTime endDate;
-	
-	public void offsetBalanceDue(Integer payment) {
-		this.balanceDue -= payment;
-	}
-	
-	public void incrementBalanceDue(Integer sessionBalanceDue) {
-		this.balanceDue += sessionBalanceDue;
+	@PrePersist
+	public void prePersist() {
+		int sessionBalanceDue = this.enrolment.getSessionFee() - this.feePaid;
+		this.enrolment.incrementBalanceDue(sessionBalanceDue);
 	}
 }
