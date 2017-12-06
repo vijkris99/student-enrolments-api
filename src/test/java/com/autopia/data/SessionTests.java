@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.autopia.data.entities.Enrolment;
@@ -27,7 +26,6 @@ import com.autopia.data.repositories.SessionRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureMockMvc
 public class SessionTests {
 	
 	@Autowired
